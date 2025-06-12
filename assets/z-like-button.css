@@ -1,0 +1,79 @@
+.zLikeButton {
+	position: relative;
+	font-size: 1em;
+	margin: 1em 0;
+	display: flex;
+	justify-content: start;
+	align-items: center;
+	background: #fff;
+}
+.likeCheck {
+	visibility: hidden;
+	top: 0;
+	left: 0;
+	position: absolute;
+}
+.likeLabel {
+	font-size: 1.2em;
+	width: 1em;
+	height: 1em;
+	vertical-align: middle;
+	cursor: pointer;
+	line-height: 1em;
+	position: relative;
+	margin: 0;	
+}
+.likeLabel::before {
+	font-size: inherit;
+	width: auto;
+	height: auto;
+	position: absolute;
+	transform: translate(-50%, -50%);
+	left: 50%;
+	top: 50%;
+}
+.likeLabel::after {
+	content: "\f487";
+	width: auto;
+	height: auto;
+	position: absolute;
+	transform: translate(-50%, -50%);
+	left: 50%;
+	top: 50%;
+	font-size: inherit;
+	opacity: 0.8;
+}
+.likeCount {
+	margin: 0;
+	display: inline-block;
+	font-size: 0.8em;
+	line-height: 1.5em;/* 1.2/0.8 */
+	vertical-align: middle;
+	margin-left: 0.3em;
+	color: #7F7F7F;
+}
+.hide-counter .likeCount {
+	display: none;
+}
+.likeLabel:hover {
+	animation: beat .25s infinite alternate;
+}
+.likeCheck:not(:checked) + .likeLabel {
+	color: #BFBFBF;	
+}
+.likeCheck:checked + .likeLabel {
+	color: #ef1d5f;
+	will-change: font-size;
+	animation: grow 1s cubic-bezier(.17, .89, .32, 1.49);
+}
+.likeCheck:checked + .likeLabel::after {
+	opacity: 0;
+	transform: translate(-50%, -150%) scale(1.2);
+	transition: opacity .5s ease-in-out, transform .5s ease-in-out;
+}
+.likeCheck:checked + .likeLabel:hover {
+	will-change: font-size;
+	animation: grow 1s cubic-bezier(.17, .89, .32, 1.49), beat .25s infinite alternate;
+}
+@keyframes grow { 0%, 17.5% { font-size: 0.5em; } }
+@keyframes beat { to { transform: scale(1.2); } }

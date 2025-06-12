@@ -1,0 +1,128 @@
+#adminmenu a[href="options-general.php?page=z_like_button_options"]:before {
+    display: inline-block;
+    content: "";
+    width: 18px;
+    height: 18px;
+    opacity: 0.6;
+    vertical-align: bottom;
+    margin-right: 8px;
+    background-color: transparent;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-image: url("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyBpZD0ibWluaU1lbnUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgdmVyc2lvbj0iMS4xIiB2aWV3Qm94PSIwIDAgNTEyIDUxMiI+PHBhdGggaWQ9Imljb24iIHN0eWxlPSJmaWxsOiNmZmZmZmY7IiBkPSJNMjU2LDBDMTE0LjgsMCwwLDExNC44LDAsMjU2czExNC44LDI1NiwyNTYsMjU2LDI1Ni0xMTQuOCwyNTYtMjU2UzM5Ny4yLDAsMjU2LDBaTTM4MS45LDI4My43bC02NS4yLDY1LjItNjAuNyw2MC43LTYwLjctNjAuNy02NS4yLTY1LjJjLTMzLjQtMzMuNi0zMy40LTg3LjksMC0xMjEuNCwzMy42LTMzLjQsODcuOS0zMy40LDEyMS40LDBsNC41LDQuNSw0LjUtNC41YzMzLjYtMzMuNCw4Ny45LTMzLjQsMTIxLjQsMCwzMy40LDMzLjYsMzMuNCw4Ny45LDAsMTIxLjRaIi8+PC9zdmc+");
+}
+#adminmenu .current a[href="options-general.php?page=z_like_button_options"]:before {
+    opacity: 0.9;
+}
+
+.wrap > h1.zlb-title {
+    font-size: 30px;
+    line-height: 1.3;
+}
+h2.zlb-smaller {
+    font-size: 1.1em;
+}
+p.intro {
+    font-size: 16px;
+    margin-bottom: 3em;
+    margin-top: 0.75em;
+}
+
+
+
+
+
+
+
+
+
+
+
+.like-me-options .alert {
+	padding: 8px 35px 8px 14px;
+	margin-bottom: 20px;
+	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+	background-color: #fcf8e3;
+	border: 1px solid #fbeed5;
+	border-radius: 4px;
+	display: inline-block;
+}
+
+
+
+#meta-box-z-like-button .badge {
+	border-radius: 9px;
+	display: inline-block;
+	font-size: 11.844px;
+	font-weight: bold;
+	line-height: 14px;
+	color: #fff;
+	text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+	white-space: nowrap;
+	padding: 4px 10px;
+}
+#meta-box-z-like-button .badge-info {
+	background-color: #3a87ad;
+}
+#meta-box-z-like-button .dashicons-heart {
+	color: #C40925;
+}
+
+
+
+
+
+.like-me-options .alert-warning {
+	color: #c09853;
+}
+.like-me-options table th, .like-me-options table td {
+	padding: 8px;
+	line-height: 20px;
+	text-align: left;
+	vertical-align: top;
+}
+
+
+
+
+
+.zThanks {
+    position: absolute;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+
+}
+.zThanks a {
+    text-decoration: none;
+    color: inherit;
+}
+.zThanks .heart {
+	fill: #F6017A;
+}
+.zThanks a {
+    text-decoration: none;
+    color: inherit;
+}
+.zThanks a:hover {
+    text-decoration: underline;
+    color: #F6017A;
+}
+.zThanks svg {
+	width: 14px;
+	height: auto;
+	vertical-align: middle;
+	margin: 0 0.4rem;
+}
+.zThanks svg {
+	animation: 1.75s linear infinite z-heart-pulse;
+}
+@keyframes z-heart-pulse {
+	0% { transform: scale(1); }
+	20% { transform: scale(1.2); }
+	40% { transform: scale(1); }
+	60% { transform: scale(1.2); }
+	100% { transform: scale(1); }
+}
