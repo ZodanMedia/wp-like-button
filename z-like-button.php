@@ -7,8 +7,8 @@
  * Requires at least: 5.5
  * Tested up to: 6.8
  * Description: Displays a simple and customisable like-button for all types of posts.
- * Version: 0.0.1
- * Stable Tag: 0.0.1
+ * Version: 0.0.2
+ * Stable Tag: 0.0.2
  * Author: Zodan
  * Author URI: https://zodan.nl
  * Text Domain: z-like-button
@@ -21,7 +21,7 @@ if ( ! class_exists( 'zLikeButton' ) ) :
 
     class zLikeButton {
         private $options;
-        private $version_number = '0.0.1';
+        private $version_number = '0.0.2';
 
         protected static $instance = null;
 
@@ -71,9 +71,9 @@ if ( ! class_exists( 'zLikeButton' ) ) :
         public function wp_enqueue_scripts_like_button() {
             $options = get_option( 'z_like_button_options' );
 
-            if (!isset($options["show_like_active_dashicons"]) || $options["show_like_active_dashicons"] != true) {
-                wp_enqueue_style( 'dashicons' );
-            }
+            // if (!isset($options["show_like_active_dashicons"]) || $options["show_like_active_dashicons"] != true) {
+            //     wp_enqueue_style( 'dashicons' );
+            // }
 
             if (!isset($options["show_like_active_css"]) || $options["show_like_active_css"] != true) {
                 $plugins_url = plugin_dir_url( __FILE__ );
@@ -94,13 +94,25 @@ if ( ! class_exists( 'zLikeButton' ) ) :
                 wp_register_script( 'z-like-button-admin', $plugins_url . 'assets/admin-scripts.js', array('jquery'), $this->version_number, array( 'in_footer' => true ) );
                 wp_enqueue_script( 'z-like-button-admin' );
 
+                wp_localize_script('z-like-button-admin', 'z_like_button_admin', array(
+                        'copiedText' => esc_html__('Shortcode copied!', 'z-like-button')
+                    )
+                );
             }
         }
 
 
         public function like_button_settings_init() {
 
-            register_setting( 'like_button_group', 'z_like_button_options' );
+            $settings_args = array(
+                'type' => 'array',
+                'description' => '',
+                // 'sanitize_callback' => 'z_like_button_plugin_options_validate',
+                'sanitize_callback' => array($this, 'z_like_button_plugin_options_validate'),
+                'show_in_rest' => false
+            );
+
+            register_setting( 'like_button_group', 'z_like_button_options', $settings_args );
 
             add_settings_section(
                 'z_like_button_options_page_section',
@@ -137,27 +149,27 @@ if ( ! class_exists( 'zLikeButton' ) ) :
 
 
             add_settings_field(
-                'z_like_button_options_active_css',
-                esc_html__('Disable plugin’s CSS', 'z-like-button'),
-                array($this, 'z_like_button_options_field_active_css_render'),
+                'z_like_button_options_icon',
+                esc_html__('Icon to display', 'z-like-button'),
+                array($this, 'z_like_button_options_field_icon_render'),
                 'like_button_settings',
                 'z_like_button_options_page_section'
             );
 
-            add_settings_field(
-                'z_like_button_options_active_dashicons',
-                esc_html__('Disable plugin’s default dashicon', 'z-like-button'),
-                array($this, 'z_like_button_options_field_active_dashicons_render'),
-                'like_button_settings',
-                'z_like_button_options_page_section'
-            );
+            // add_settings_field(
+            //     'z_like_button_options_active_dashicons',
+            //     esc_html__('Disable plugin’s default dashicon', 'z-like-button'),
+            //     array($this, 'z_like_button_options_field_active_dashicons_render'),
+            //     'like_button_settings',
+            //     'z_like_button_options_page_section'
+            // );
         }
 
         public function z_like_button_options_page_settings_section_callback() {
             echo '<p>';
             printf(
                 /* translators: %s is a shortcode used by the plugin */
-                esc_html__( 'The Like Button can be added anywhere using the shortcode %s.', 'z-like-button' ),
+                esc_html__( 'The Like Button can be added anywhere using the shortcode %s', 'z-like-button' ),
                 '<code>[z_like_button]</code>'
             );  
             echo '.</p><p>';
@@ -174,13 +186,13 @@ if ( ! class_exists( 'zLikeButton' ) ) :
             if (isset($options["show_like_button_before"]) && $options["show_like_button_before"] == true) {
                 $checked = " checked='checked' ";
             }
-            echo '<label for="show_like_button_before"><input id="show_like_button_before" type="checkbox" name="z_like_button_options[show_like_button_before]" value="true" '.esc_attr( $checked ).' />'.esc_html__('Before the content', 'z-like-button').'</label><br>';
+            echo '<label for="show_like_button_before"><input id="show_like_button_before" type="checkbox" name="z_like_button_options[show_like_button_before]" value="1" '.esc_attr( $checked ).' />'.esc_html__('Before the content', 'z-like-button').'</label><br>';
 
             $checked = "";
             if (isset($options["show_like_button_after"]) && $options["show_like_button_after"] == true) {
                 $checked = " checked='checked' ";
             }
-            echo '<label for="show_like_button_after"><input id="show_like_button_after" type="checkbox" name="z_like_button_options[show_like_button_after]" value="true" '.esc_attr( $checked ).' />'.esc_html__('After the content', 'z-like-button').'</label><br>';
+            echo '<label for="show_like_button_after"><input id="show_like_button_after" type="checkbox" name="z_like_button_options[show_like_button_after]" value="1" '.esc_attr( $checked ).' />'.esc_html__('After the content', 'z-like-button').'</label><br>';
 
             if ((!isset($options["show_like_button_before"]) || $options["show_like_button_before"] != true) && (!isset($options["show_like_button_after"]) || $options["show_like_button_after"] != true) ) {
                 echo '<p class="alert alert-warning"><span class="dashicons dashicons-warning"></span> ';
@@ -208,7 +220,7 @@ if ( ! class_exists( 'zLikeButton' ) ) :
                 if (isset($options["cpt_".$key]) && $options["cpt_".$key] == true) {
                     $checked = " checked='checked' ";
                 }
-                echo '<label for="cpt_'.esc_attr( $key ).'"><input id="cpt_'.esc_attr( $key ).'" type="checkbox" name="z_like_button_options[cpt_'.esc_attr( $key ).']" value="true" '.esc_attr( $checked ).' />'.esc_html( $value ).'<br></label>';
+                echo '<label for="cpt_'.esc_attr( $key ).'"><input id="cpt_'.esc_attr( $key ).'" type="checkbox" name="z_like_button_options[cpt_'.esc_attr( $key ).']" value="1" '.esc_attr( $checked ).' />'.esc_html( $value ).'<br></label>';
             }
         }
 
@@ -220,44 +232,45 @@ if ( ! class_exists( 'zLikeButton' ) ) :
             if (isset($options["hide_counter_box"]) && $options["hide_counter_box"] == true) {
                 $checked = " checked='checked' ";
             }
-            echo '<input id="like_hide_counter_box" type="checkbox" name="z_like_button_options[hide_counter_box]" value="true" '.esc_attr( $checked ).' /><label for="like_hide_counter_box">' . esc_html__('Check this to hide the like counter box', 'z-like-button') . '</label>';
+            echo '<input id="like_hide_counter_box" type="checkbox" name="z_like_button_options[hide_counter_box]" value="1" '.esc_attr( $checked ).' /><label for="like_hide_counter_box">' . esc_html__('Check this to hide the like counter box', 'z-like-button') . '</label>';
         }
 
-
-
-
-
-
-
-
-
-
-        public function z_like_button_options_field_active_css_render() {
+        public function z_like_button_options_field_icon_render() {
             $options = get_option( 'z_like_button_options' );
 
-            $checked = "";
-            if (isset($options["show_like_active_css"]) && $options["show_like_active_css"] == true) {
-                $checked = " checked='checked' ";
-            }
-            echo '<input id="show_like_active_css" type="checkbox" name="z_like_button_options[show_like_active_css]" value="true" '.esc_attr( $checked ).' /><label for="show_like_active_css">' . esc_html__('Check this to disable our CSS and use your own custom CSS rules.', 'z-like-button') . '</label>';
-        }
+            $current_icon = (isset($options['icon'])) ? $options['icon'] : 'icon-heart';
 
-        public function z_like_button_options_field_active_dashicons_render() {
-            $options = get_option( 'z_like_button_options' );
+            $all_icons = $this->getAllIcons();
 
-            $checked = "";
-            if (isset($options["show_like_active_dashicons"]) && $options["show_like_active_dashicons"] == true) {
-                $checked = " checked='checked' ";
-            }
-            echo '<input id="show_like_active_dashicons" type="checkbox" name="z_like_button_options[show_like_active_dashicons]" value="true" '.esc_attr( $checked ).' /><label for="show_like_active_dashicons">' . esc_html__('Check this to disable our heart dashicon and use your own custom button appearance.', 'z-like-button') . '</label>';
+            foreach( $all_icons as $key => $value ) {
+                $checked = "";
+                if( $value == $current_icon ) {
+                    $checked = ' checked="checked"';
+                }
+                echo '<label><input type="radio" name="z_like_button_options[icon]" value="'. esc_attr( $value ) .'"'.esc_attr( $checked ).'><i class="zlb-icon '. esc_attr( $value ) .'"></i></label>';
+
+           }
 
         }
+
+        // public function z_like_button_options_field_active_dashicons_render() {
+        //     $options = get_option( 'z_like_button_options' );
+
+        //     $checked = "";
+        //     if (isset($options["show_like_active_dashicons"]) && $options["show_like_active_dashicons"] == true) {
+        //         $checked = " checked='checked' ";
+        //     }
+        //     echo '<input id="show_like_active_dashicons" type="checkbox" name="z_like_button_options[show_like_active_dashicons]" value="true" '.esc_attr( $checked ).' /><label for="show_like_active_dashicons">' . esc_html__('Check this to disable our heart dashicon and use your own custom button appearance.', 'z-like-button') . '</label>';
+
+        //     echo '<i class="zlb-icon icon-bookmark"></i>';
+        // }
+
 
         public function z_like_button_options_page() {
             add_filter('admin_footer_text', array($this, 'z_admin_footer_print_thankyou'), 900);
 
             ?>
-            <div class="wrap like-me-options">
+            <div class="wrap like-button-options">
                 <h1 class="zlb-title"><?php esc_html_e("Z Like Button Settings", 'z-like-button'); ?></h1>
                 <p class="intro"><?php esc_html_e('A simple Like Button to display on any post (page, custom post type)', 'z-like-button'); ?></p>
                 <form method="post" action="options.php">
@@ -271,6 +284,41 @@ if ( ! class_exists( 'zLikeButton' ) ) :
             </div><?php
 
         }
+
+
+        public function z_like_button_plugin_options_validate( $input ) {
+            $output = array();
+
+            if( ! empty( $input ) ) {
+
+                foreach( $input as $key => $value ) {
+
+                    if( $key === 'icon' ) {
+                        // the icon must be in the icon range
+                        $icons = $this->getAllIcons();
+                        if ( in_array( $value, $icons ) ) {
+                            $output['icon'] = sanitize_text_field( $input['icon'] );
+                        } else {
+                            $output['icon'] = 'icon-heart';
+                        }
+
+                    } else {
+                        // all other values must be boolean
+                        $output[$key] = intval( $input[$key] );
+                    }
+                }
+            } else {
+                // return empty array
+                $output = array('icon' => 'icon-notifications');
+            }
+
+            return $output;
+
+        }
+
+
+
+
 
         // Print a thankyou notice
         public function z_admin_footer_print_thankyou( $data ) {
@@ -353,13 +401,12 @@ if ( ! class_exists( 'zLikeButton' ) ) :
             if(isset($like_hide) && $like_hide == 1) {
                 return;
             }
-    
+            
+            $options = get_option( 'z_like_button_options' );
+            $current_icon = (isset($options['icon'])) ? $options['icon'] : 'icon-heart';
             $all_likes = get_post_meta( $id_post, 'z_like_button_likes', true );
             $totals = get_post_meta( $id_post, 'z_like_button_totals', true );
-
-            $options = get_option( 'z_like_button_options' );
-
-            
+     
            
             if(empty($totals) || !is_numeric($totals)) {
                 $like = 0;
@@ -376,9 +423,11 @@ if ( ! class_exists( 'zLikeButton' ) ) :
             // by user or ip
             if( $user_id ==! 0 ) {
                 $index = self::valueExistsByField( $user_id, $all_likes, 'user_id');
-            } else {
+            } elseif( ! empty( $_SERVER['REMOTE_ADDR'] ) ) {
                 $ip_client = sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) );
                 $index = self::valueExistsByField( $ip_client, $all_likes, 'ip');
+            } else {
+                $index = false;
             }
 
             $class = '';
@@ -391,17 +440,17 @@ if ( ! class_exists( 'zLikeButton' ) ) :
                 $class .= ' liked';
                 $checked = 'checked';
             }
-            $random_id = rand(50000000,500000000);
+            $random_id = wp_rand(50000000,500000000);
 
             return '<div class="zLikeButton'. esc_html( $class ).'"><input '.esc_html( $checked ).' id="post_'.esc_html( $id_post ).'_'.$random_id.'" type="checkbox" class="likeCheck"/>
-                <label for="post_'.esc_html( $id_post ).'_'.$random_id.'" class="dashicons dashicons-heart likeLabel" aria-label="like this"></label><span class="likeCount">'. esc_html( $like) .'</span></div>';
+                <label for="post_'.esc_html( $id_post ).'_'.$random_id.'" class="zlb-icon '. esc_attr($current_icon) .' likeLabel" aria-label="like this"></label><span class="likeCount">'. esc_html( $like) .'</span></div>';
         }
 
 
 
         public function handle_ajax() {
             if( empty( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'])), 'z-like-button' ) ) {
-                die( 'Forbidden !' . $_POST['nonce']);
+                die( 'Forbidden !');
             }
             if( empty( $_POST['post'] ) ) {
                 die( 'Forbidden !');
@@ -489,7 +538,7 @@ if ( ! class_exists( 'zLikeButton' ) ) :
             wp_register_script( 'z-like-button', $plugins_url . 'assets/z-like-button.js', array( 'jquery' ), array('jquery'), $this->version_number, array( 'in_footer' => true ) );
             wp_enqueue_script('z-like-button');
 
-            wp_localize_script('z-like-button', 'like_button', array(
+            wp_localize_script('z-like-button', 'z_like_button', array(
                     'url'   => admin_url('admin-ajax.php'),
                     'nonce' => wp_create_nonce('z-like-button'),
                 )
@@ -503,7 +552,7 @@ if ( ! class_exists( 'zLikeButton' ) ) :
             $post_types = $this->get_all_cpt();
 
             if(isset($post_types) && count($post_types) > 0) {
-                add_meta_box( 'meta-box-z-like-button', '<span>' . esc_html__( 'Z Like Button', 'z-like-button' ) . '  <span class="dashicons dashicons-heart"></span></span> ', array($this, 'like_button_metabox'), $post_types, 'side' );
+                add_meta_box( 'meta-box-z-like-button', '<span>' . esc_html__( 'Z Like Button', 'z-like-button' ) . '  <span class="zlb-icon icon-heart"></span></span> ', array($this, 'like_button_metabox'), $post_types, 'side' );
             }
         }
 
@@ -554,6 +603,75 @@ if ( ! class_exists( 'zLikeButton' ) ) :
 
             return $index !== false ? $index : false;
         }
+
+
+        public function getAllIcons() {
+            $icons = array();
+            $icons[] = 'icon-heart';
+            $icons[] = 'icon-bookmark-outline';
+            $icons[] = 'icon-bookmark';
+            $icons[] = 'icon-star-full';
+            $icons[] = 'icon-tag';
+            $icons[] = 'icon-thumbs-up';
+            $icons[] = 'icon-thumbs-down';
+            $icons[] = 'icon-save-disk';
+            $icons[] = 'icon-view-show';
+            $icons[] = 'icon-view-hide';
+            $icons[] = 'icon-pin';
+            $icons[] = 'icon-notifications-outline';
+            $icons[] = 'icon-notifications';
+
+            $icons[] = 'icon-document';
+            $icons[] = 'icon-document-add';
+            $icons[] = 'icon-inbox';
+            $icons[] = 'icon-inbox-check';
+            $icons[] = 'icon-inbox-download';
+            $icons[] = 'icon-inbox-full';
+            $icons[] = 'icon-link';
+            $icons[] = 'icon-list-add';
+
+            $icons[] = 'icon-badge';
+            $icons[] = 'icon-book-reference';
+            $icons[] = 'icon-compose';
+            $icons[] = 'icon-copy';
+            $icons[] = 'icon-date-add';
+            $icons[] = 'icon-dial-pad';
+            $icons[] = 'icon-edit-pencil';
+            $icons[] = 'icon-home';
+            $icons[] = 'icon-hour-glass';
+            $icons[] = 'icon-light-bulb';
+            $icons[] = 'icon-location';
+            $icons[] = 'icon-lock-closed';
+            $icons[] = 'icon-lock-open';
+            $icons[] = 'icon-menu';
+            $icons[] = 'icon-mic';
+            $icons[] = 'icon-mood-happy-outline';
+            $icons[] = 'icon-mood-happy-solid';
+            $icons[] = 'icon-mood-neutral-outline';
+            $icons[] = 'icon-mood-neutral-solid';
+            $icons[] = 'icon-mood-sad-outline';
+            $icons[] = 'icon-mood-sad-solid';
+            $icons[] = 'icon-network';
+            $icons[] = 'icon-news-paper';
+            $icons[] = 'icon-portfolio';
+            $icons[] = 'icon-time';
+            $icons[] = 'icon-timer';
+            $icons[] = 'icon-volume-mute';
+            $icons[] = 'icon-volume-off';
+            $icons[] = 'icon-volume-up';
+            $icons[] = 'icon-wallet';
+
+            return $icons;
+
+        }
+
+
+
+
+
+
+
+
 
 
 

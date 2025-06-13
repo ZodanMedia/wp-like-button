@@ -4,7 +4,7 @@ Tags: like, button, like, like button, custom like
 Requires at least: 5.5
 Tested up to: 6.8
 Requires PHP: 5.6
-Stable tag: 0.0.1
+Stable tag: 0.0.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -30,6 +30,9 @@ Display a very simple and customisable like button for your posts or any custom 
 3. Plugin metabox: you can remove the like button for any post or content individually and even cheat with you counters with manual editing :P
 
 == Changelog ==
+
+= 0.0.2 =
+* Optimized validation, added icon selection
 
 = 0.0.1 =
 * Pre-release

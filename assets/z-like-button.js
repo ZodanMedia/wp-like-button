@@ -13,14 +13,14 @@
                 
                 data = {
                     'action': 'like_button',
-                    'nonce': like_button.nonce,
+                    'nonce': z_like_button.nonce,
                     'post': $this.attr('id')
                 };
 
                 $.ajax({
                     type: "post",
                     data: data,
-                    url: like_button.url,
+                    url: z_like_button.url,
                     dataType: "json",
                     success: function (results) {
                         $these.each(function() {

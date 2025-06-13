@@ -29,17 +29,43 @@ p.intro {
     margin-top: 0.75em;
 }
 
+.like-button-options p {
+	position: relative;
+}
+
+.like-button-options code {
+	position: relative;
+	color: #000;
+	cursor: copy;
+}
+.like-button-options code {
+	color: #000;
+}
+
+.zlb-msg {
+	position: absolute;
+	display: inline-block;
+	background-color: #fff;
+	color: gray;
+	padding: 2px 14px;
+	width: max-content;
+	border-radius: 5px;
+	transform: translate( -80%, -110%);
+
+	transition-property: opacity;
+  	transition-duration: 1s;
+	transition-timing-function: ease-in-out;
+	opacity: 1;
+}
+.zlb-msg.fadeOut {
+	opacity: 0;
+}
 
 
 
 
 
-
-
-
-
-
-.like-me-options .alert {
+.like-button-options .alert {
 	padding: 8px 35px 8px 14px;
 	margin-bottom: 20px;
 	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
@@ -69,14 +95,14 @@ p.intro {
 	color: #C40925;
 }
 
-
-
-
-
-.like-me-options .alert-warning {
+.like-button-options .alert-warning {
 	color: #c09853;
 }
-.like-me-options table th, .like-me-options table td {
+.like-button-options .alert-warning code {
+	color: #967233;
+}
+
+.like-button-options table th, .like-me-options table td {
 	padding: 8px;
 	line-height: 20px;
 	text-align: left;
@@ -125,4 +151,216 @@ p.intro {
 	40% { transform: scale(1); }
 	60% { transform: scale(1.2); }
 	100% { transform: scale(1); }
+}
+
+
+
+@font-face {
+    font-family: 'zLikeButtonFont';
+    src:  url('fonts/zLikeButtonFont.eot?upha30');
+    src:  url('fonts/zLikeButtonFont.eot?upha30#iefix') format('embedded-opentype'),
+      url('fonts/zLikeButtonFont.ttf?upha30') format('truetype'),
+      url('fonts/zLikeButtonFont.woff?upha30') format('woff'),
+      url('fonts/zLikeButtonFont.svg?upha30#icomoon') format('svg');
+    font-weight: normal;
+    font-style: normal;
+    font-display: block;
+}
+.zlb-icon {
+    /* use !important to prevent issues with browser extensions that change fonts */
+    font-family: 'zLikeButtonFont' !important;
+    /* speak: never; */
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+
+    /* Better Font Rendering =========== */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+.icon-badge:before {
+    content: "\e900";
+}
+.icon-book-reference:before {
+    content: "\e901";
+}
+.icon-bookmark:before {
+    content: "\e902";
+}
+.icon-bookmark-outline:before {
+    content: "\e903";
+}
+.icon-compose:before {
+    content: "\e904";
+}
+.icon-copy:before {
+    content: "\e905";
+}
+.icon-date-add:before {
+    content: "\e906";
+}
+.icon-dial-pad:before {
+    content: "\e907";
+}
+.icon-document:before {
+    content: "\e908";
+}
+.icon-document-add:before {
+    content: "\e909";
+}
+.icon-edit-pencil:before {
+    content: "\e90a";
+}
+.icon-heart:before {
+    content: "\e90b";
+}
+.icon-home:before {
+    content: "\e90c";
+}
+.icon-hour-glass:before {
+    content: "\e90d";
+}
+.icon-inbox:before {
+    content: "\e90e";
+}
+.icon-inbox-check:before {
+    content: "\e90f";
+}
+.icon-inbox-download:before {
+    content: "\e910";
+}
+.icon-inbox-full:before {
+    content: "\e911";
+}
+.icon-light-bulb:before {
+    content: "\e912";
+}
+.icon-link:before {
+    content: "\e913";
+}
+.icon-list-add:before {
+    content: "\e914";
+}
+.icon-location:before {
+    content: "\e915";
+}
+.icon-lock-closed:before {
+    content: "\e916";
+}
+.icon-lock-open:before {
+    content: "\e917";
+}
+.icon-menu:before {
+    content: "\e918";
+}
+.icon-mic:before {
+    content: "\e919";
+}
+.icon-mood-happy-outline:before {
+    content: "\e91a";
+}
+.icon-mood-happy-solid:before {
+    content: "\e91b";
+}
+.icon-mood-neutral-outline:before {
+    content: "\e91c";
+}
+.icon-mood-neutral-solid:before {
+    content: "\e91d";
+}
+.icon-mood-sad-outline:before {
+    content: "\e91e";
+}
+.icon-mood-sad-solid:before {
+    content: "\e91f";
+}
+.icon-network:before {
+    content: "\e920";
+}
+.icon-news-paper:before {
+    content: "\e921";
+}
+.icon-notifications:before {
+    content: "\e922";
+}
+.icon-notifications-outline:before {
+    content: "\e923";
+}
+.icon-pin:before {
+    content: "\e924";
+}
+.icon-portfolio:before {
+    content: "\e925";
+}
+.icon-save-disk:before {
+    content: "\e926";
+}
+.icon-star-full:before {
+    content: "\e927";
+}
+.icon-tag:before {
+    content: "\e928";
+}
+.icon-thumbs-down:before {
+    content: "\e929";
+}
+.icon-thumbs-up:before {
+    content: "\e92a";
+}
+.icon-time:before {
+    content: "\e92b";
+}
+.icon-timer:before {
+    content: "\e92c";
+}
+.icon-view-hide:before {
+    content: "\e92d";
+}
+.icon-view-show:before {
+    content: "\e92e";
+}
+.icon-volume-mute:before {
+    content: "\e92f";
+}
+.icon-volume-off:before {
+    content: "\e930";
+}
+.icon-volume-up:before {
+    content: "\e931";
+}
+.icon-wallet:before {
+    content: "\e932";
+}
+
+
+
+
+label:has(input[name*="icon"]) {
+    background: #eee;
+    border: 1px solid #ccc;
+    color: #bbb;
+    border-radius: 50%;
+    display: inline-flex;
+    width: 36px;
+    height: 36px;
+    margin: 2px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    font-size: 18px;
+}
+label input[name*="icon"] {
+    visibility: hidden;
+    position: absolute;
+}
+label:has(input[name*="icon"]:hover) {
+    background: #fff;
+    color: #666;
+}
+label:has(input[name*="icon"]:checked) {
+    background: #fff;
+    color: red;
 }
