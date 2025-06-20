@@ -16,12 +16,45 @@ Display a very simple and customisable like button for your posts or any custom 
 
 == Installation ==
 
-1. Upload the plugin files to the `/wp-content/plugins/like-me` directory, or install the plugin through the WordPress plugins screen directly.
-2. Activate it through the 'Plugins' screen in WordPress
+= Install the Mini Menu from within WordPress =
+
+1. Visit the plugins page within your dashboard and select ‘Add New’;
+1. Search for ‘Z Like Button’;
+1. Activate the plugin from your Plugins page;
+1. Go to ‘after activation’ below.
+
+= Install manually =
+
+1. Unzip the Z Like Button zip file
+2. Upload the unzipped folder to the /wp-content/plugins/ directory;
+3. Activate the plugin through the ‘Plugins’ menu in WordPress;
+4. Go to ‘after activation’ below.
+
+= After activation =
+
+1. On the Plugins page in WordPress you will see a 'settings' link below the plugin name;
+2. On the settings page, tick the boxes for location (**where** on the page you want the button to appear) and post types (on **what type** of posts/pages);
+3. I you want you can
+    - hide the counter box
+    - change the icon
+    - change the color of the icon
+4. If you want, you can give users a list of all the posts and pages they liked by
+    a. Selecting a page to automatically have the list add to that page or
+    b. Select 'None' and add the `[z_my_likes_list]` shortcode on the page of your liking. If a user is logged in, the list of liked posts and pages will appear.
+5. Save your settings and you’re done!
 
 == Frequently Asked Questions ==
 
-(soon)
+= Can I add additional styling? =
+
+Yes you can. By adding custom styles in the WordPress customizer under /Appearance/Customize. The parent element of the button has the `.zLikeButton` class, the label containing the icon is styled using the `zLikeLabel` class.
+
+= Do you have plans to improve the plugin =
+
+Yes. We currently have on our roadmap:
+* Adding translations
+* Adding more features for both the button and the 'My liks list' (ordering in time, grouping by post type)
+* Adding option for minifying the assets
 
 == Screenshots ==
 

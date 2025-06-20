@@ -12,7 +12,7 @@
 	left: 0;
 	position: absolute;
 }
-.likeLabel {
+.zLikeLabel {
 	font-size: 1.2em;
 	width: 1em;
 	height: 1em;
@@ -22,7 +22,7 @@
 	position: relative;
 	margin: 0;	
 }
-/* .likeLabel::before {
+/* .zLikeLabel::before {
 	font-size: inherit;
 	width: auto;
 	height: auto;
@@ -43,18 +43,18 @@
 .hide-counter .likeCount {
 	display: none;
 }
-.likeLabel:hover {
+.zLikeLabel:hover {
 	animation: zlb-beat .25s infinite alternate;
 }
-.likeCheck:not(:checked) + .likeLabel {
+.likeCheck:not(:checked) + .zLikeLabel {
 	color: var(--z-color-inactive);	
 }
-.likeCheck:checked + .likeLabel {
+.likeCheck:checked + .zLikeLabel {
 	color: var(--z-color-active);
 	will-change: font-size;
 	animation: zlb-grow 1s cubic-bezier(.17, .89, .32, 1.49);
 }
-.likeCheck:checked + .likeLabel:hover {
+.likeCheck:checked + .zLikeLabel:hover {
 	will-change: font-size;
 	animation: zlb-grow 1s cubic-bezier(.17, .89, .32, 1.49), zlb-beat .25s infinite alternate;
 }

@@ -547,7 +547,7 @@ if ( ! class_exists( 'zLikeButton' ) ) :
             $random_id = wp_rand(50000000,500000000);
 
             return '<div class="zLikeButton'. esc_html( $class ).'" style="--z-color-inactive: '. esc_attr( $color_inactive ).';--z-color-active: '. esc_attr( $color_active ).'"><input '.esc_html( $checked ).' id="post_'.esc_html( $id_post ).'_'.$random_id.'" type="checkbox" class="likeCheck"/>
-                <label for="post_'.esc_html( $id_post ).'_'.$random_id.'" class="zlb-icon '. esc_attr($current_icon) .' likeLabel" aria-label="like this"></label><span class="likeCount">'. esc_html( $like) .'</span></div>';
+                <label for="post_'.esc_html( $id_post ).'_'.$random_id.'" class="zlb-icon '. esc_attr($current_icon) .' zLikeLabel" aria-label="like this"></label><span class="likeCount">'. esc_html( $like) .'</span></div>';
         }
     
 
