@@ -11,6 +11,24 @@
 			}
 		});
 
+		// Add Color Picker  in admin to all inputs that have 'z-mini-menu-color-field' class
+    	$('.z-like-button-color-field').wpColorPicker();
+		
+		// After 500 ms, try to move the labels so we can properly display them
+		setTimeout(function() {
+			$('.color-label-faux').each(function(){
+				let label_to_move = $(this);
+				console.log(label_to_move);
+				let target = $(this).next(); // .wp-picker-container
+				console.log(target);
+				label_to_move.prependTo(target);
+			});
+
+		}, 500 );
+
+
+
+
 		// Copy the shortcode code on click of the <code> el
 		var zlb_code_els = document.querySelectorAll('.like-button-options code');
 

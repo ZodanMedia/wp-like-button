@@ -25,13 +25,13 @@
                     success: function (results) {
                         $these.each(function() {
                             console.log($(this));
-                            $(this).removeAttr("disabled");
                             $(this).parent().toggleClass('liked');
                             let checked = $this.prop("checked");
                             console.log(checked);
                             $(this).prop("checked", checked);
                             $(this).parent().find('.likeCount').text(results.likes);
                             $(this).parent().find('.intitule').text(results.text);
+                            $(this).removeAttr("disabled");
                         })
                     },
                     error: function () {

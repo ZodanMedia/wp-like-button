@@ -5,7 +5,6 @@
 	display: flex;
 	justify-content: start;
 	align-items: center;
-	background: #fff;
 }
 .likeCheck {
 	visibility: hidden;
@@ -48,10 +47,10 @@
 	animation: zlb-beat .25s infinite alternate;
 }
 .likeCheck:not(:checked) + .likeLabel {
-	color: #BFBFBF;	
+	color: var(--z-color-inactive);	
 }
 .likeCheck:checked + .likeLabel {
-	color: #ef1d5f;
+	color: var(--z-color-active);
 	will-change: font-size;
 	animation: zlb-grow 1s cubic-bezier(.17, .89, .32, 1.49);
 }
