@@ -1,18 +1,18 @@
 (function ($) {
     $(function() {
 
-		$('#z-like-button-update-wrapper').hide();
+		$('#zlikebutton-update-wrapper').hide();
 
-		$('#z-like-button-manual-update').change(function() {
+		$('#zlikebutton-manual-update').change(function() {
 			if($(this).is(':checked')) {
-				$('#z-like-button-update-wrapper').slideDown();
+				$('#zlikebutton-update-wrapper').slideDown();
 			} else {
-				$('#z-like-button-update-wrapper').slideUp();
+				$('#zlikebutton-update-wrapper').slideUp();
 			}
 		});
 
-		// Add Color Picker  in admin to all inputs that have 'z-mini-menu-color-field' class
-    	$('.z-like-button-color-field').wpColorPicker();
+		// Add Color Picker  in admin to all inputs that have 'zlikebutton-color-field' class
+    	$('.zlikebutton-color-field').wpColorPicker();
 		
 		// After 500 ms, try to move the labels so we can properly display them
 		setTimeout(function() {
@@ -52,7 +52,7 @@
 
 			const msgDiv = document.createElement( 'div' );
 			msgDiv.classList.add('zlb-msg');
-			msgDiv.innerHTML = z_like_button_admin.copiedText;
+			msgDiv.innerHTML = zlikebutton_admin.copiedText;
 			el.after(msgDiv);
 			setTimeout( function() {
 				msgDiv.classList.add('fadeOut');

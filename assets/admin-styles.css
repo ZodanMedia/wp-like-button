@@ -1,4 +1,4 @@
-#adminmenu a[href*="?page=z_like_button_options"]:before {
+#adminmenu a[href*="?page=zlikebutton_options"]:before {
     display: inline-block;
     content: "";
     width: 18px;
@@ -12,7 +12,7 @@
     background-size: cover;
     background-image: url("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyBpZD0ibWluaU1lbnUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgdmVyc2lvbj0iMS4xIiB2aWV3Qm94PSIwIDAgNTEyIDUxMiI+PHBhdGggaWQ9Imljb24iIHN0eWxlPSJmaWxsOiNmZmZmZmY7IiBkPSJNMjU2LDBDMTE0LjgsMCwwLDExNC44LDAsMjU2czExNC44LDI1NiwyNTYsMjU2LDI1Ni0xMTQuOCwyNTYtMjU2UzM5Ny4yLDAsMjU2LDBaTTM4MS45LDI4My43bC02NS4yLDY1LjItNjAuNyw2MC43LTYwLjctNjAuNy02NS4yLTY1LjJjLTMzLjQtMzMuNi0zMy40LTg3LjksMC0xMjEuNCwzMy42LTMzLjQsODcuOS0zMy40LDEyMS40LDBsNC41LDQuNSw0LjUtNC41YzMzLjYtMzMuNCw4Ny45LTMzLjQsMTIxLjQsMCwzMy40LDMzLjYsMzMuNCw4Ny45LDAsMTIxLjRaIi8+PC9zdmc+");
 }
-#adminmenu .current a[href*="?page=z_like_button_options"]:before {
+#adminmenu .current a[href*="?page=zlikebutton_options"]:before {
     opacity: 0.9;
 }
 .form-table th span.description {
@@ -119,7 +119,7 @@ p.intro {
     display: block !important;
     padding-bottom: 4px;
 }
-#meta-box-z-like-button .badge {
+#meta-box-zlikebutton .badge {
 	border-radius: 9px;
 	display: inline-block;
 	font-size: 11.844px;
@@ -130,10 +130,10 @@ p.intro {
 	white-space: nowrap;
 	padding: 4px 10px;
 }
-#meta-box-z-like-button .badge-info {
+#meta-box-zlikebutton .badge-info {
 	background-color: #3a87ad;
 }
-#meta-box-z-like-button .dashicons-heart {
+#meta-box-zlikebutton .dashicons-heart {
 	color: #C40925;
 }
 

@@ -1,10 +1,9 @@
 === Z Like Button ===
-Contributors: whodunitagency, larrach, audrasjb, leprincenoir
+Contributors: zodannl, martenmoolenaar
 Tags: like, button, like, like button, custom like
 Requires at least: 5.5
 Tested up to: 6.8
-Requires PHP: 5.6
-Stable tag: 0.0.4
+Stable tag: 0.0.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -40,7 +39,7 @@ Display a very simple and customisable like button for your posts or any custom 
     - change the color of the icon
 4. If you want, you can give users a list of all the posts and pages they liked by
     a. Selecting a page to automatically have the list add to that page or
-    b. Select 'None' and add the `[z_my_likes_list]` shortcode on the page of your liking. If a user is logged in, the list of liked posts and pages will appear.
+    b. Select 'None' and add the `[zlikebutton_likes_list]` shortcode on the page of your liking. If a user is logged in, the list of liked posts and pages will appear.
 5. Save your settings and you’re done!
 
 == Frequently Asked Questions ==
@@ -64,6 +63,11 @@ Yes. We currently have on our roadmap:
 
 
 == Changelog ==
+
+= 0.0.5 =
+* Added security improvements
+* Changed the wp_json_encoded output
+* Changed some function names to satisfy the plugin check
 
 = 0.0.4 =
 * Added color selection for the icons
