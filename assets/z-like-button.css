@@ -241,3 +241,74 @@
 .icon-wallet:before {
     content: "\e932";
 }
+
+.zlb-my-likes-list > li {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    gap: 1rem;
+}
+.zlb-my-likes-list > li > .remove-from-list {
+    --zlb-button-size: 20px;
+    box-sizing: border-box;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: red;
+    color: white;
+    border-color: red;
+    border-radius: 20rem;
+    border-style: solid;
+    border-width: 0;
+    min-width: var(--zlb-button-size);
+    max-width: var(--zlb-button-size);
+    width: var(--zlb-button-size);
+    min-height: var(--zlb-button-size);
+    max-height: var(--zlb-button-size);
+    height: var(--zlb-button-size);
+    aspect-ratio: 1;
+    padding: 0;
+    margin: 0;
+    font-family: sans-serif;
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 1;
+    letter-spacing: 0;
+    text-transform: none;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 250ms ease-in-out;
+    transform-origin: center center;
+    box-shadow: 0 0 0 0 transparent;
+}
+.zlb-my-likes-list > li > .remove-from-list > span {
+    transform: rotate(45deg);
+}
+.zlb-my-likes-list > li > .remove-from-list:hover,
+.zlb-my-likes-list > li > .remove-from-list:focus {
+    background-color: #c80202;
+    color: white;
+    border-color: #c80202;
+    box-shadow: 0 0 0 0 #c80202;
+    animation-name: zlb-button-border-grow;
+    animation-duration: 250ms;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: 1;
+    animation-direction: alternate;
+    animation-fill-mode: forwards;
+    animation-delay: 0;
+}
+.zlb-my-likes-list > li > .remove-from-list:focus,
+.zlb-my-likes-list > li > .remove-from-list:focus-visible,
+.zlb-my-likes-list > li > .remove-from-list:focus-within {
+    outline-style: dashed;
+    outline-width: 1px;
+    outline-offset: 3px;
+    outline-color: #c80202;
+}
+
+@keyframes zlb-button-border-grow {
+      0% { box-shadow: 0 0 0 0 #c80202; }
+    100% { box-shadow: 0 0 0 2px #c80202; }
+}

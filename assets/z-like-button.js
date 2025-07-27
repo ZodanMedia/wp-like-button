@@ -39,6 +39,37 @@
                 });
             });
         }
+
+        if ($('.zlb-my-likes-list > li > .remove-from-list').length > 0) {
+            $('.zlb-my-likes-list > li > .remove-from-list').click(function () {
+                const $this = $(this);
+                $(this).attr("disabled", "disabled");
+                
+                data = {
+                    'action': 'like_button_remove',
+                    'nonce': $this.attr('data-post-nonce'),
+                    'post': $this.attr('data-post-id')
+                };
+
+                $.ajax({
+                    type: "post",
+                    data: data,
+                    url: z_like_button.url,
+                    dataType: "json",
+                    success: function (results) {
+                        if(results.removed == $this.attr('data-post-id')) {
+                            $this.closest('li').remove();
+                            console.log($(this));
+                        } else {
+                            alert(results.message);
+                        }
+                    },
+                    error: function () {
+                    }
+                });
+            });
+        }
+
     });
     
 })(jQuery);

@@ -7,8 +7,8 @@
  * Requires at least: 5.5
  * Tested up to: 6.8
  * Description: Displays a simple and customisable like-button for all types of posts.
- * Version: 0.0.5
- * Stable Tag: 0.0.5
+ * Version: 0.0.6
+ * Stable Tag: 0.0.6
  * Author: Zodan
  * Author URI: https://zodan.nl
  * Text Domain: z-like-button
@@ -21,7 +21,7 @@ if ( ! class_exists( 'zLikeButton' ) ) :
 
     class zLikeButton {
         private $options;
-        private $version_number = '0.0.5';
+        private $version_number = '0.0.6';
 
         protected static $instance = null;
 
@@ -36,6 +36,10 @@ if ( ! class_exists( 'zLikeButton' ) ) :
              */
             add_action('wp_ajax_like_button', array($this, 'handle_ajax'));
             add_action('wp_ajax_nopriv_like_button', array($this, 'handle_ajax'));
+
+            add_action('wp_ajax_like_button_remove', array($this, 'handle_ajax_removal'));
+            add_action('wp_ajax_nopriv_like_button_remove', array($this, 'handle_ajax_removal'));
+
 
             /**
              * Shortcode for inserting the button
@@ -64,41 +68,7 @@ if ( ! class_exists( 'zLikeButton' ) ) :
 
         }
 
-
-        public function wp_enqueue_scripts_like_button() {
-            $options = get_option( 'zlikebutton_options' );
-
-            // if (!isset($options["show_like_active_dashicons"]) || $options["show_like_active_dashicons"] != true) {
-            //     wp_enqueue_style( 'dashicons' );
-            // }
-
-            if (!isset($options["show_like_active_css"]) || $options["show_like_active_css"] != true) {
-                $plugins_url = plugin_dir_url( __FILE__ );
-                wp_enqueue_style( 'zlikebutton-css', $plugins_url . 'assets/z-like-button.css', null, $this->version_number );
-            }
-        }
-
-
-        public function like_button_css($hook) {
-
-            global $current_screen, $typenow;
-
-            $plugins_url = plugin_dir_url( __FILE__ );
-            wp_enqueue_style( 'zlikebutton-admin-css', $plugins_url . 'assets/admin-styles.css' , array( 'wp-color-picker' ), $this->version_number );
-
-            if((isset($current_screen) && isset($current_screen->base) && ($current_screen->base == 'settings_page_zlikebutton_options' || $current_screen->base == '' )) || ( $hook == 'post-new.php' || $hook == 'post.php' ) ){
-
-                wp_register_script( 'zlikebutton-admin', $plugins_url . 'assets/admin-scripts.js', array('jquery', 'wp-color-picker'), $this->version_number, array( 'in_footer' => true ) );
-                wp_enqueue_script( 'zlikebutton-admin' );
-
-                wp_localize_script('zlikebutton-admin', 'zlikebutton_admin', array(
-                        'copiedText' => esc_html__('Shortcode copied!', 'z-like-button')
-                    )
-                );
-            }
-        }
-
-
+        // All settings
         public function like_button_settings_init() {
 
             $settings_args = array(
@@ -143,6 +113,18 @@ if ( ! class_exists( 'zLikeButton' ) ) :
             );
 
             add_settings_field(
+                'zlikebutton_options_show_logged_out',
+                esc_html__('Show to visitors', 'z-like-button'),
+                array($this, 'zlikebutton_options_show_logged_out_render'),
+                'like_button_settings',
+                'zlikebutton_options_page_section'
+            );
+
+
+
+            
+
+            add_settings_field(
                 'zlikebutton_options_icon',
                 esc_html__('Icon to display', 'z-like-button'),
                 array($this, 'zlikebutton_options_field_icon_render'),
@@ -166,10 +148,6 @@ if ( ! class_exists( 'zLikeButton' ) ) :
                 'zlikebutton_options_page_section'
             );
 
-
-
-            
-
             // add_settings_field(
             //     'zlikebutton_options_active_dashicons',
             //     esc_html__('Disable plugin’s default dashicon', 'z-like-button'),
@@ -191,7 +169,6 @@ if ( ! class_exists( 'zLikeButton' ) ) :
             echo '.</p>';
 
         }
-
 
         public function zlikebutton_options_field_show_render() {
             $options = get_option( 'zlikebutton_options' );
@@ -219,7 +196,6 @@ if ( ! class_exists( 'zLikeButton' ) ) :
             }
         }
 
-
         public function zlikebutton_options_field_show_on_render() {
             $options = get_option( 'zlikebutton_options' );
 
@@ -238,6 +214,15 @@ if ( ! class_exists( 'zLikeButton' ) ) :
             }
         }
 
+        public function zlikebutton_options_show_logged_out_render() {
+            $options = get_option( 'zlikebutton_options' );
+
+            $checked = "";
+            if (isset($options["show_to_visitors"]) && $options["show_to_visitors"] == true) {
+                $checked = " checked='checked' ";
+            }
+            echo '<input id="show_to_visitors" type="checkbox" name="zlikebutton_options[show_to_visitors]" value="1" '.esc_attr( $checked ).' /><label for="show_to_visitors">' . esc_html__('Check this to also present the Like Button to visitors (users that are not logged in).', 'z-like-button') . '<br>' . esc_html__('This will registers likes based on ip-address, which is not very precise and may result in odd behaviour).', 'z-like-button') . '</label>';
+        }
 
         public function zlikebutton_options_hide_counter_render() {
             $options = get_option( 'zlikebutton_options' );
@@ -266,7 +251,6 @@ if ( ! class_exists( 'zLikeButton' ) ) :
            }
         }
 
-
         public function zlikebutton_options_field_colors_render() {
             $options = get_option( 'zlikebutton_options' );
 
@@ -279,8 +263,6 @@ if ( ! class_exists( 'zLikeButton' ) ) :
             echo '<input id="zlikebutton-active" class="zlikebutton-color-field" type="text" name="zlikebutton_options[color_active]" value="'. esc_attr( $current_color_active ) .'">';
 
         }
-
-
 
         public function zlikebutton_options_field_my_likes_page_render() {
             $options = get_option( 'zlikebutton_options' );
@@ -310,6 +292,7 @@ if ( ! class_exists( 'zLikeButton' ) ) :
             echo ' <span> '. esc_html__( 'or', 'z-like-button' );
             echo ' <a href="'. esc_url( admin_url( 'post-new.php?post_type=page' ) ) .'" target="_blank">'. esc_html__('add a new page', 'z-like-button') .'</a></span>';
 
+            echo '<br>';
             echo '<p class="alert alert-info"><span class="dashicons dashicons-info"></span> ';
             esc_html_e( 'The list of likes is automatically added to the content of the selected page.', 'z-like-button' );
             echo '<br>';
@@ -323,43 +306,7 @@ if ( ! class_exists( 'zLikeButton' ) ) :
         }
 
 
-
-
-
-
-        // public function zlikebutton_options_field_active_dashicons_render() {
-        //     $options = get_option( 'zlikebutton_options' );
-
-        //     $checked = "";
-        //     if (isset($options["show_like_active_dashicons"]) && $options["show_like_active_dashicons"] == true) {
-        //         $checked = " checked='checked' ";
-        //     }
-        //     echo '<input id="show_like_active_dashicons" type="checkbox" name="zlikebutton_options[show_like_active_dashicons]" value="true" '.esc_attr( $checked ).' /><label for="show_like_active_dashicons">' . esc_html__('Check this to disable our heart dashicon and use your own custom button appearance.', 'z-like-button') . '</label>';
-
-        //     echo '<i class="zlb-icon icon-bookmark"></i>';
-        // }
-
-
-        public function zlikebutton_options_page() {
-            add_filter('admin_footer_text', array($this, 'z_admin_footer_print_thankyou'), 900);
-
-            ?>
-            <div class="wrap like-button-options">
-                <h1 class="zlb-title"><?php esc_html_e("Z Like Button Settings", 'z-like-button'); ?></h1>
-                <p class="intro"><?php esc_html_e('A simple Like Button to display on any post (page, custom post type)', 'z-like-button'); ?></p>
-                <form method="post" action="options.php">
-                 <?php
-                    settings_fields( 'like_button_group' );
-                    do_settings_sections( 'like_button_settings' );
-                    submit_button();
-                ?>
-            
-                </form>
-            </div><?php
-
-        }
-
-
+        // Validate settings on save
         public function zlikebutton_plugin_options_validate( $input ) {
             $output = array();
 
@@ -397,8 +344,28 @@ if ( ! class_exists( 'zLikeButton' ) ) :
 
         }
 
+        // Add option page to admin
+        public function like_button_add_admin_menu() {
+            add_options_page(esc_html__('Configuration like me', 'z-like-button'), esc_html__('Like Button', 'z-like-button'), 'manage_options', 'zlikebutton_options', array($this, 'zlikebutton_options_page') );
+        }
+        public function zlikebutton_options_page() {
+            add_filter('admin_footer_text', array($this, 'z_admin_footer_print_thankyou'), 900);
 
+            ?>
+            <div class="wrap like-button-options">
+                <h1 class="zlb-title"><?php esc_html_e("Z Like Button Settings", 'z-like-button'); ?></h1>
+                <p class="intro"><?php esc_html_e('A simple Like Button to display on any post (page, custom post type)', 'z-like-button'); ?></p>
+                <form method="post" action="options.php">
+                 <?php
+                    settings_fields( 'like_button_group' );
+                    do_settings_sections( 'like_button_settings' );
+                    submit_button();
+                ?>
+            
+                </form>
+            </div><?php
 
+        }
 
 
         // Print a thankyou notice
@@ -412,13 +379,93 @@ if ( ! class_exists( 'zLikeButton' ) ) :
             return $data;
         }
 
+        // Enqueue scripts (front end)
+        public function wp_enqueue_scripts_like_button() {
+            $options = get_option( 'zlikebutton_options' );
 
-        public function like_button_add_admin_menu() {
-            add_options_page(esc_html__('Configuration like me', 'z-like-button'), esc_html__('Like Button', 'z-like-button'), 'manage_options', 'zlikebutton_options', array($this, 'zlikebutton_options_page') );
+            // if (!isset($options["show_like_active_dashicons"]) || $options["show_like_active_dashicons"] != true) {
+            //     wp_enqueue_style( 'dashicons' );
+            // }
+
+            if (!isset($options["show_like_active_css"]) || $options["show_like_active_css"] != true) {
+                $plugins_url = plugin_dir_url( __FILE__ );
+                wp_enqueue_style( 'zlikebutton-css', $plugins_url . 'assets/z-like-button.css', null, $this->version_number );
+            }
+        }
+        // Localize scripts (front-end)
+        public function like_button_scripts() {
+            $plugins_url = plugin_dir_url( __FILE__ );
+
+            wp_register_script( 'z-like-button', $plugins_url . 'assets/z-like-button.js', array( 'jquery' ), array('jquery'), $this->version_number, array( 'in_footer' => true ) );
+            wp_enqueue_script('z-like-button');
+
+            wp_localize_script('z-like-button', 'z_like_button', array(
+                    'url'   => admin_url('admin-ajax.php'),
+                    'nonce' => wp_create_nonce('z-like-button'),
+                )
+            );
         }
 
+        // Enqueue scripts (admin)
+        public function like_button_css($hook) {
 
+            global $current_screen, $typenow;
 
+            $plugins_url = plugin_dir_url( __FILE__ );
+            wp_enqueue_style( 'zlikebutton-admin-css', $plugins_url . 'assets/admin-styles.css' , array( 'wp-color-picker' ), $this->version_number );
+
+            if((isset($current_screen) && isset($current_screen->base) && ($current_screen->base == 'settings_page_zlikebutton_options' || $current_screen->base == '' )) || ( $hook == 'post-new.php' || $hook == 'post.php' ) ){
+
+                wp_register_script( 'zlikebutton-admin', $plugins_url . 'assets/admin-scripts.js', array('jquery', 'wp-color-picker'), $this->version_number, array( 'in_footer' => true ) );
+                wp_enqueue_script( 'zlikebutton-admin' );
+
+                wp_localize_script('zlikebutton-admin', 'zlikebutton_admin', array(
+                        'copiedText' => esc_html__('Shortcode copied!', 'z-like-button')
+                    )
+                );
+            }
+        }
+
+        // Settings per post
+        public function like_button_boxes() {
+            $post_types = $this->get_all_cpt();
+
+            if(isset($post_types) && count($post_types) > 0) {
+                add_meta_box( 'meta-box-zlikebutton', '<span>' . esc_html__( 'Z Like Button', 'z-like-button' ) . '  <span class="zlb-icon icon-heart"></span></span> ', array($this, 'like_button_metabox'), $post_types, 'side' );
+            }
+        }
+        public function like_button_metabox($post) {
+            $total_likes = get_post_meta( $post->ID, 'zlikebutton_totals', true );
+
+            if(empty($total_likes) || !is_numeric($total_likes)) {
+                $total_likes = 0;
+                add_post_meta($post->ID, 'zlikebutton_totals', $total_likes, true);
+                update_post_meta($post->ID, 'zlikebutton_totals', $total_likes);
+            }
+
+            wp_nonce_field( 'zlikebutton_nonce', 'zlikebutton_metabox_nonce');
+
+            echo '<p>' . esc_html__('Current count:', 'z-like-button') . ' <span class="badge badge-info">' . esc_attr( $total_likes ) . '</span></p>';
+
+            // Hide like button for this post
+            $like_hide = get_post_meta( $post->ID, 'zlikebutton_hide', true );
+            if(empty($like_hide) || !is_numeric($like_hide)) {
+                add_post_meta($post->ID, 'zlikebutton_hide', 0, true);
+                update_post_meta($post->ID, 'zlikebutton_hide', 0);
+            }
+            if (isset($like_hide) && $like_hide == 1) {
+                $checked = " checked='checked' ";
+            } else {
+                $checked = "";
+            }
+
+            echo '<p><input id="z-hide-like-button" name="zlikebutton_hide" type="checkbox" value="1" '.esc_attr( $checked ).' /> <label for="z-hide-like-button">'.esc_html__('Hide like button for this post', 'z-like-button').'</label></p>';
+
+            echo '<p><input id="zlikebutton-manual-update" name="zlikebutton-manual-update" type="checkbox" value="1" /> <label for="zlikebutton-manual-update">'.esc_html__('Manual update', 'z-like-button').'</label></p>';
+
+            echo '<div id="zlikebutton-update-wrapper"><p><label for="zlikebutton-manual-update-likes">' . esc_html__('New total:', 'z-like-button') . '</label> <input class="small-text" id="zlikebutton-manual-update-likes" name="zlikebutton-manual-update-likes" type="number" value="'.esc_attr( $total_likes ).'" /><br /><small>' . esc_html__('You’ll need to update your post to save changes.', 'z-like-button') . '</small></p></div>';
+
+        } 
         public function save_like_button($post_id) {
             // If the use cannot edit posts, bail out
             if ( ! current_user_can( 'edit_post', $post_id ) ) {
@@ -464,9 +511,40 @@ if ( ! class_exists( 'zLikeButton' ) ) :
             update_post_meta($post_id, 'zlikebutton_hide', $zlikebutton_hide);
 
         }
+    
 
+        // Use a shortcode to display an overview of liked posts
+        public function shortcode_my_likes_list($atts, $content = null) {
 
+            if( is_user_logged_in() ) {
+                $user_id = get_current_user_id();
+                $my_likes = get_user_meta( $user_id, 'zlikebutton_likes', true );
 
+                $html = '<ul class="zlb-my-likes-list">';
+                if( ! empty( $my_likes ) ) {
+                    foreach( $my_likes as $post_id ) {
+                        $post_type = get_post_type($post_id);
+                        $post_nonce = wp_create_nonce('z-like-button-remove');
+                        $html .= '<li data-type="'.$post_type.'">';
+                        $html .= '<a href="'.esc_url( get_the_permalink( intval( $post_id ) ) ).'">';
+                        $html .= esc_html( get_the_title( intval( $post_id) ) );
+                        $html .= '</a>';
+                        $html .= '<button class="remove-from-list" data-post-id="'.esc_attr(intval( $post_id)).'" data-post-nonce="'.esc_attr( $post_nonce ).'" title="'.esc_html__('Remove this item from my list','z-like-button').'"><span>'.esc_html__('+','z-like-button').'</span></button>';
+                        $html .= '</li>';
+                    }
+                }
+                $html .= '</ul>';
+
+                return $html;
+
+            } else {
+                $user_id = 0;
+                return '';
+            }
+
+        }
+
+        // Filter content for shortcodes
         public function like_button_filter_the_content_for_button($content) {
 
             if ( !in_array(get_post_type(), $this->get_all_cpt()) ) return $content;
@@ -481,8 +559,6 @@ if ( ! class_exists( 'zLikeButton' ) ) :
             return $content;
 
         }
-
-
         public function like_button_filter_the_content_for_my_list($content) {
 
             $options = get_option( 'zlikebutton_options' );
@@ -499,25 +575,92 @@ if ( ! class_exists( 'zLikeButton' ) ) :
         }
 
 
-        public function shortcode_like_button($atts, $content = null) {
 
-            $id_post = get_the_ID();
-            $like_hide = get_post_meta( $id_post, 'zlikebutton_hide', true );
-            if(isset($like_hide) && $like_hide == 1) {
-                return;
+
+
+
+
+
+
+
+
+
+        private function ip_is_in_postmeta( $ip = 0, $post_id = 0) {
+            $liked = false;
+            if ( !in_array(get_post_type(intval($post_id)), $this->get_all_cpt() ) ) {
+                return false;
             }
-            
             $options = get_option( 'zlikebutton_options' );
-            $current_icon = (isset($options['icon'])) ? $options['icon'] : 'icon-heart';
-            $color_inactive =  (isset($options['color_inactive'])) ? $options['color_inactive'] : '#989898';
-            $color_active = (isset($options['color_active'])) ? $options['color_active'] : '#ef1d5f';    
-            $all_likes = get_post_meta( $id_post, 'zlikebutton_likes', true );
-            $totals = get_post_meta( $id_post, 'zlikebutton_totals', true );
 
-            if(empty($totals) || !is_numeric($totals)) {
-                $like = 0;
+            // if the option "show_to_visitors" is set, search for ip
+            if (isset($options["show_to_visitors"]) && $options["show_to_visitors"] == true) {
+                if( isset( $_SERVER['REMOTE_ADDR'] )) {
+                    $remote_address = sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) );
+                } else {
+                    $remote_address = uniqid();
+                }
+
+                $all_likes = get_post_meta( intval($post_id), 'zlikebutton_likes', true );
+                $ip_client = sanitize_text_field( wp_unslash( $remote_address ) );
+
+                $liked = self::valueExistsByField( $ip_client, $all_likes, 'ip');
+
+            }
+            return $liked;
+            
+        }
+        private function user_is_in_postmeta( $post_id = 0 ) {
+            $liked = false;
+            if ( !in_array(get_post_type(intval($post_id)), $this->get_all_cpt() ) ) {
+                return false;
+            }
+            if( ! is_user_logged_in() ) {
+                return false;
+            }
+
+            $user_id = get_current_user_id();
+
+            $all_likes = get_post_meta( intval($post_id), 'zlikebutton_likes', true );
+            $liked = self::valueExistsByField( $user_id, $all_likes, 'user_id');
+            
+            return $liked;
+
+        }
+        private function post_is_in_usermeta( $post_id = 0 ) {
+            $liked = false;
+            $user_id = 0;
+            if ( !in_array(get_post_type(intval($post_id)), $this->get_all_cpt() ) ) {
+                return false;
+            }
+            if( ! is_user_logged_in() ) {
+                return false;
+            }
+
+            $user_id = get_current_user_id();
+            
+            $my_likes = get_user_meta( $user_id, 'zlikebutton_likes', true );
+            if( ! empty( $my_likes ) ) {
+                if( in_array(intval($post_id), $my_likes) ) {
+                    $liked = true;
+                }
+            }
+            return $liked;
+        }
+
+        private function add_ip_and_user_to_postmeta( $post_id = 0 ) {
+            if ( !in_array(get_post_type(intval($post_id)), $this->get_all_cpt() ) ) {
+                return false;
+            }
+            $all_likes = get_post_meta( intval($post_id), 'zlikebutton_likes', true );
+
+            if( ! is_array( $all_likes ) ) { // apparently the first item
+                $all_likes = array();
+            }
+
+            if( ! empty( $_SERVER['REMOTE_ADDR'] ) ) {
+                $ip_client = sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) );
             } else {
-                $like = $totals;
+                $ip_client = 0;
             }
 
             if( is_user_logged_in() ) {
@@ -525,16 +668,228 @@ if ( ! class_exists( 'zLikeButton' ) ) :
             } else {
                 $user_id = 0;
             }
-
-            // by user or ip
-            if( $user_id ==! 0 ) {
-                $index = self::valueExistsByField( $user_id, $all_likes, 'user_id');
-            } elseif( ! empty( $_SERVER['REMOTE_ADDR'] ) ) {
-                $ip_client = sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) );
-                $index = self::valueExistsByField( $ip_client, $all_likes, 'ip');
+            // if the USER is not already in the post meta, update the post meta,
+            $liked_by_user = self::valueExistsByField( intval($user_id), $all_likes, 'user_id');
+            if( $liked_by_user === false ) {
+                $all_likes[] = array(
+                    'user_id' => $user_id,
+                    'ip' => $ip_client,
+                    'like' => 1,
+                );
+                return update_post_meta($post_id, 'zlikebutton_likes', $all_likes);
             } else {
-                $index = false;
+                return false;
             }
+        }
+        private function add_post_to_usermeta( $post_id = 0 ) {
+            if ( !in_array(get_post_type(intval($post_id)), $this->get_all_cpt() ) ) {
+                return false;
+            }
+            if( is_user_logged_in() ) {
+                $user_id = get_current_user_id();
+            } else {
+                $user_id = 0;
+            }
+
+            if( ! empty( $user_id ) ) {
+                $my_likes = get_user_meta( $user_id, 'zlikebutton_likes', true );
+                if( ! is_array( $my_likes ) ) {
+                    $my_likes = array();
+                }
+                // only add if not already in there (for some reason)
+                if( ! in_array(intval($post_id), $my_likes) ) {
+                    $my_likes[] = intval($post_id);
+                }
+                return update_user_meta( $user_id, 'zlikebutton_likes', $my_likes );
+            } else {
+                return 0; // not false!!
+            }
+        }
+
+        private function remove_ip_and_user_from_postmeta( $post_id = 0, $ip = 0 ) {
+           if ( !in_array(get_post_type(intval($post_id)), $this->get_all_cpt() ) ) {
+                return false;
+            }
+            $all_likes = get_post_meta( intval($post_id), 'zlikebutton_likes', true );
+
+            if( ! is_array( $all_likes ) ) { // apparently the first item
+                return false; // nothing to remove
+            }
+
+            if( ! empty( $_SERVER['REMOTE_ADDR'] ) ) {
+                $ip_client = sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) );
+            } else {
+                $ip_client = 0;
+            }
+
+            if( is_user_logged_in() ) {
+                $user_id = get_current_user_id();
+            } else {
+                $user_id = 0;
+            }
+            // let's see if ip address and user_id are in the post meta
+            $index_liked_by_ip = self::valueExistsByField( $ip_client, $all_likes, 'ip');
+            $index_liked_by_user = self::valueExistsByField( intval($user_id), $all_likes, 'user_id');
+
+            // first check if the user existsa
+            if ($index_liked_by_user !== false) {
+                // entry exists, remove
+                unset( $all_likes[$index_liked_by_user] );
+            
+            // otherwise, check by ip
+            // NOTE: this might not be the same visitor
+            } elseif ($index_liked_by_ip !== false) {
+                // entry exists, remove
+                unset( $all_likes[$index_liked_by_ip] );
+            
+            }
+
+            return update_post_meta($post_id, 'zlikebutton_likes', $all_likes);
+
+        }
+
+        private function remove_post_from_usermeta( $post_id = 0 ) {            
+            if ( !in_array(get_post_type(intval($post_id)), $this->get_all_cpt() ) ) {
+                return false;
+            }
+            if( ! is_user_logged_in() ) {
+                return false;
+            }
+            
+            $user_id = get_current_user_id();
+            
+            if( ! empty( $user_id ) ) {
+                $my_likes = get_user_meta( $user_id, 'zlikebutton_likes', true );
+                if( ! empty( $my_likes ) ) {
+                    if( in_array($post_id, $my_likes) ) {
+                        $keysToRemove = array_keys($my_likes, $post_id);
+                        foreach($keysToRemove as $k) {
+                            unset($my_likes[$k]);
+                        }
+                        return update_user_meta( $user_id, 'zlikebutton_likes', $my_likes );
+                    }
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+
+        }
+
+        
+
+        public function get_total_likes( $post_id = 0) {
+           if ( !in_array(get_post_type(intval($post_id)), $this->get_all_cpt() ) ) {
+                return false;
+            }
+            $totals = get_post_meta( intval($post_id), 'zlikebutton_totals', true );
+            if(empty($totals) || !is_numeric($totals)) {
+                $totals = 0;
+            }
+            return intval($totals);
+        }
+        private function update_total_likes( $post_id = 0, $amount = 0 ) {
+           if ( !in_array(get_post_type(intval($post_id)), $this->get_all_cpt() ) ) {
+                return false;
+            }
+            $totals = get_post_meta( intval($post_id), 'zlikebutton_totals', true );
+            if(empty($totals) || !is_numeric($totals)) {
+                $totals = 0;
+                $new = true;
+            }
+            $totals += intval($amount);
+
+            update_post_meta( intval($post_id), 'zlikebutton_totals', intval($totals) );
+        } 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+        public function shortcode_like_button($atts, $content = null) {
+
+            $options = get_option( 'zlikebutton_options' );
+
+            // if the option "show_to_visitors" is not set
+            // and the user is not logged in, bail out
+            if ( ! isset($options["show_to_visitors"]) && ! is_user_logged_in() ) {
+                return;
+            }
+
+            // if the button is disabled for this page, bail out
+            $id_post = get_the_ID();
+            $like_hide = get_post_meta( $id_post, 'zlikebutton_hide', true );
+            if(isset($like_hide) && $like_hide == 1) {
+                return;
+            }
+
+
+            // 1. total likes for this post, from post meta
+            $totals = get_post_meta( $id_post, 'zlikebutton_totals', true );
+            if(empty($totals) || !is_numeric($totals)) {
+                $likes_counted = 0;
+            } else {
+                $likes_counted = $totals;
+            }
+
+
+            // 2. has the visitor / user liked the post?
+            $is_liked = false;
+            $ip_client = 0;
+            // by IP
+            if( ! empty( $_SERVER['REMOTE_ADDR'] ) ) {
+                $ip_client = sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) );
+                $is_liked = $this->ip_is_in_postmeta( $ip_client, $id_post );
+            }
+
+            if( is_user_logged_in() ) {
+                $is_liked_user_post = $this->user_is_in_postmeta( $id_post );
+                $is_liked_user_meta = $this->post_is_in_usermeta( $id_post );
+
+                // repair stuff
+                if( $is_liked_user_post && ! $is_liked_user_meta ) {
+                    $this->add_post_to_usermeta( $id_post );
+                    $is_liked = true;
+                } elseif( $is_liked_user_meta && ! $is_liked_user_post ) {
+                    $this->add_ip_and_user_to_postmeta( $id_post );
+                    $is_liked = true;
+                }
+            }
+
+
+
+            // 3. Output
+            $current_icon = (isset($options['icon'])) ? $options['icon'] : 'icon-heart';
+            $color_inactive =  (isset($options['color_inactive'])) ? $options['color_inactive'] : '#989898';
+            $color_active = (isset($options['color_active'])) ? $options['color_active'] : '#ef1d5f';    
+            
 
             $class = '';
             $checked = '';
@@ -542,44 +897,22 @@ if ( ! class_exists( 'zLikeButton' ) ) :
                 $class .= ' hide-counter';
             }
 
-            if ($index !== false) {
+            if ($is_liked !== false) {
                 $class .= ' liked';
                 $checked = 'checked';
             }
             $random_id = wp_rand(50000000,500000000);
 
             return '<div class="zLikeButton'. esc_html( $class ).'" style="--z-color-inactive: '. esc_attr( $color_inactive ).';--z-color-active: '. esc_attr( $color_active ).'"><input '.esc_html( $checked ).' id="post_'.esc_html( $id_post ).'_'.$random_id.'" type="checkbox" class="likeCheck"/>
-                <label for="post_'.esc_html( $id_post ).'_'.$random_id.'" class="zlb-icon '. esc_attr($current_icon) .' zLikeLabel" aria-label="like this"></label><span class="likeCount">'. esc_html( $like) .'</span></div>';
+                <label for="post_'.esc_html( $id_post ).'_'.$random_id.'" class="zlb-icon '. esc_attr($current_icon) .' zLikeLabel" aria-label="like this"></label><span class="likeCount">'. esc_html( $likes_counted) .'</span></div>';
         }
-    
 
 
-      public function shortcode_my_likes_list($atts, $content = null) {
 
-            if( is_user_logged_in() ) {
-                $user_id = get_current_user_id();
-                $my_likes = get_user_meta( $user_id, 'zlikebutton_likes', true );
 
-                $html = '<ul class="zlb-my-likes-list">';
-                if( ! empty( $my_likes ) ) {
-                    foreach( $my_likes as $post_id ) {
-                        $html .= '<li>';
-                        $html .= '<a href="'.esc_url( get_the_permalink( intval( $post_id ) ) ).'">';
-                        $html .= esc_html( get_the_title( intval( $post_id) ) );
-                        $html .= '</a>';
-                        $html .= '</li>';
-                    }
-                }
-                $html .= '</ul>';
 
-                return $html;
 
-            } else {
-                $user_id = 0;
-                return '';
-            }
 
-        }
 
 
 
@@ -592,91 +925,67 @@ if ( ! class_exists( 'zLikeButton' ) ) :
             if( empty( $_POST['post'] ) ) {
                 die( 'Forbidden !');
             }
+
             $ip_client = ( ! empty($_SERVER['REMOTE_ADDR'] ) ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
-
             $id_post = intval( str_replace('post_', '', sanitize_text_field( wp_unslash( $_POST['post'] ) ) ) );
+            $is_liked = false;
+            $return_text = 'nothing done';
+            $log = array();
 
-            $all_likes = get_post_meta( $id_post, 'zlikebutton_likes', true );
-            if( empty( $all_likes ) ) {
-                $all_likes = array();
-            }
-            $totals = get_post_meta( $id_post, 'zlikebutton_totals', true );
-           
+
+            $is_liked = $this->ip_is_in_postmeta( $ip_client, $id_post );
+            
             if( is_user_logged_in() ) {
-                $user_id = get_current_user_id();
-            } else {
-                $user_id = 0;
+                $is_liked_user_post = $this->user_is_in_postmeta( $id_post );
+                $is_liked_ip_post = $this->ip_is_in_postmeta( $id_post );
+
+                if( $is_liked_user_post !== false  || $is_liked_ip_post !== false ) {
+                    $is_liked = true;
+                }
+
+            
+                // repair stuff
+                if( $is_liked_user_post !== false && $is_liked_ip_post === false ) {
+                    $add_post_to_usermeta = $this->add_post_to_usermeta( $id_post );
+                    $is_liked = true;
+                } elseif( $is_liked_user_post === false && $is_liked_ip_post !== false ) {
+                    $add_ip_and_user_to_postmeta = $this->add_ip_and_user_to_postmeta( $id_post );
+                    $is_liked = true;
+                }
             }
+            
 
-            if ( ( ! isset($totals) || $totals == '' ) ) {
+            if( $is_liked !== false ) {
+                // the post is already liked, so remove likes
+                $removed_from_post = $this->remove_ip_and_user_from_postmeta( $id_post );
+                $removed_from_user = $this->remove_post_from_usermeta( $id_post );
 
-                // this is the first one
-                $data = array();
-                $data[] = array(
-                    'user_id' => $user_id,
-                    'ip' => $ip_client,
-                    'like' => 1,
-                );
-                $totals = 1;
-                add_post_meta($id_post, 'zlikebutton_totals', 1, true);
-                add_post_meta($id_post, 'zlikebutton_likes', $data, true);
+                if( $removed_from_post || $removed_from_user ) {
+                    $this->update_total_likes( $id_post, -1 );
+                    $return_text = 'One like removed for post ' . $id_post;
+                } else {
+                    $return_text = 'Wanted to remove for post ' . $id_post . ', but the data did not match.';
+                }
 
             } else {
-
-
-                // 1. Set/unset personal likes
-                if( ! empty( $user_id ) ) {
-                    $my_likes = get_user_meta( $user_id, 'zlikebutton_likes', true );
-                    if( ! empty( $my_likes ) ) {
-                        if( in_array($id_post, $my_likes) ) {
-                            $keysToRemove = array_keys($my_likes, $id_post);
-                            foreach($keysToRemove as $k) {
-                                unset($my_likes[$k]);
-                            }
-                        } else {
-                            $my_likes[] = $id_post;
-                        }
-                    } else {
-                        $my_likes = array($id_post);
-                    }
-                    update_user_meta( $user_id, 'zlikebutton_likes', $my_likes );
-                }
-
-                // 2. Set/unset total likes
-
-                // by user or ip
-                if( ! empty( $user_id ) ) {
-                    $index = self::valueExistsByField( $user_id, $all_likes, 'user_id');
-                } else {
-                    $index = self::valueExistsByField( $ip_client, $all_likes, 'ip');
-                }
-                
-                if ($index !== false) {
-                    // entry exists, remove
-                    unset( $all_likes[$index] );
-                    update_post_meta( $id_post, 'zlikebutton_likes', $all_likes );
-
-                    // fix totals 
-                    $totals = $totals - 1;
-                    update_post_meta( $id_post, 'zlikebutton_totals', $totals, true );
-
-                } else {
-                    // entry does not exist, add
-                    $item = array(
-                        'user_id' => $user_id,
-                        'ip' => $ip_client,
-                        'like' => 1,
-                    );
-                    $all_likes[] = $item;
-                    $totals = $totals + 1;
-
-                    update_post_meta($id_post, 'zlikebutton_likes', $all_likes);
-                    update_post_meta($id_post, 'zlikebutton_totals', $totals);
+                // add likes
+                $added_to_post = $this->add_ip_and_user_to_postmeta( $id_post );
+                $added_to_user = $this->add_post_to_usermeta( $id_post );
+ 
+                if( $added_to_post || $added_to_user ) {
+                    $this->update_total_likes( $id_post, 1 );
+                    $return_text = 'One like added for post ' . $id_post;
                     
+                } else {
+                    $return_text = 'Wanted to add for post ' . $id_post . ', but the data did not match.';
+                
                 }
+
             }
-            $message['likes'] = $totals;
-            $message['user'] = $my_likes;
+
+            $message['likes'] = $this->get_total_likes( $id_post );
+            $message['message'] = $return_text;
+            $message['log'] = $log;
             echo wp_json_encode($message);
             die();
         }
@@ -684,79 +993,67 @@ if ( ! class_exists( 'zLikeButton' ) ) :
 
 
 
-        public function like_button_scripts() {
-            $plugins_url = plugin_dir_url( __FILE__ );
-
-            wp_register_script( 'z-like-button', $plugins_url . 'assets/z-like-button.js', array( 'jquery' ), array('jquery'), $this->version_number, array( 'in_footer' => true ) );
-            wp_enqueue_script('z-like-button');
-
-            wp_localize_script('z-like-button', 'z_like_button', array(
-                    'url'   => admin_url('admin-ajax.php'),
-                    'nonce' => wp_create_nonce('z-like-button'),
-                )
-            );
-
-        }
-
-
-
-        public function like_button_boxes() {
-            $post_types = $this->get_all_cpt();
-
-            if(isset($post_types) && count($post_types) > 0) {
-                add_meta_box( 'meta-box-zlikebutton', '<span>' . esc_html__( 'Z Like Button', 'z-like-button' ) . '  <span class="zlb-icon icon-heart"></span></span> ', array($this, 'like_button_metabox'), $post_types, 'side' );
+        public function handle_ajax_removal() {
+            if( empty( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'])), 'z-like-button-remove' ) ) {
+                die( 'Forbidden !');
             }
-        }
-
-
-
-        public function like_button_metabox($post) {
-            $total_likes = get_post_meta( $post->ID, 'zlikebutton_totals', true );
-
-            if(empty($total_likes) || !is_numeric($total_likes)) {
-                $total_likes = 0;
-                add_post_meta($post->ID, 'zlikebutton_totals', $total_likes, true);
-                update_post_meta($post->ID, 'zlikebutton_totals', $total_likes);
+            if( empty( $_POST['post'] ) ) {
+                die( 'Forbidden !');
             }
 
-            wp_nonce_field( 'zlikebutton_nonce', 'zlikebutton_metabox_nonce');
+            $post_id = intval( sanitize_text_field( wp_unslash( $_POST['post'] ) ) );
+            
+            $removed_from_post = $this->remove_ip_and_user_from_postmeta( $post_id );
+            $removed_from_user = $this->remove_post_from_usermeta( $post_id );
 
-            echo '<p>' . esc_html__('Current count:', 'z-like-button') . ' <span class="badge badge-info">' . esc_attr( $total_likes ) . '</span></p>';
-
-            // Hide like button for this post
-            $like_hide = get_post_meta( $post->ID, 'zlikebutton_hide', true );
-            if(empty($like_hide) || !is_numeric($like_hide)) {
-                add_post_meta($post->ID, 'zlikebutton_hide', 0, true);
-                update_post_meta($post->ID, 'zlikebutton_hide', 0);
-            }
-            if (isset($like_hide) && $like_hide == 1) {
-                $checked = " checked='checked' ";
+            if( $removed_from_post || $removed_from_user ) {
+                $this->update_total_likes( $post_id, -1 );
+                $return_text = 'Item ' . $post_id . ' removed successfully';
+                $return_id = $post_id;
             } else {
-                $checked = "";
+                $return_text = 'An error occurred trying to remove the entry for post ' . $post_id . ': the data did not match.';
+                $return_id = 0;
             }
 
-            echo '<p><input id="z-hide-like-button" name="zlikebutton_hide" type="checkbox" value="1" '.esc_attr( $checked ).' /> <label for="z-hide-like-button">'.esc_html__('Hide like button for this post', 'z-like-button').'</label></p>';
-
-            echo '<p><input id="zlikebutton-manual-update" name="zlikebutton-manual-update" type="checkbox" value="1" /> <label for="zlikebutton-manual-update">'.esc_html__('Manual update', 'z-like-button').'</label></p>';
-
-            echo '<div id="zlikebutton-update-wrapper"><p><label for="zlikebutton-manual-update-likes">' . esc_html__('New total:', 'z-like-button') . '</label> <input class="small-text" id="zlikebutton-manual-update-likes" name="zlikebutton-manual-update-likes" type="number" value="'.esc_attr( $total_likes ).'" /><br /><small>' . esc_html__('You’ll need to update your post to save changes.', 'z-like-button') . '</small></p></div>';
-
+            $message['removed'] = intval( $return_id );
+            $message['message'] = $return_text;
+            echo wp_json_encode($message);
+            die();
         }
 
 
 
+
+
+
+
+        /* ============== Helper methods ==================== */
+
+
+
+        /*
+         * Check if a value exists, differentiate between 
+         * different field types
+         * 
+         * @param $needle (string) -- the value to search for
+         * $param $haystack (array) -- the array to search
+         * @param $key (string) -- the field type (column) to search by (ip or user_id)
+         * 
+         * @return (mixed) -- true if the value exists, false if not
+         */
         public function valueExistsByField($needle = false, $haystack = array(), $key = '') {
             if (empty($needle) || empty($haystack) || empty($key)) {
                 return false;
             }
-
+            
             $column = array_column($haystack, $key);
-            $index = array_search($needle, $column, true); // strict mode, more secure
-
-            return $index !== false ? $index : false;
+            // $index = array_search($needle, $column, true); // strict mode, more secure
+            return array_search($needle, $column, true);
+            // return $index !== false ? $index : false;
         }
 
 
+        // Get all available icons
         public function getAllIcons() {
             $icons = array();
             $icons[] = 'icon-heart';
@@ -817,8 +1114,7 @@ if ( ! class_exists( 'zLikeButton' ) ) :
 
         }
 
-
-
+        // Get all post types with a like button
         private function get_all_cpt() {
             $args = array(
                 'public'   => true
@@ -838,6 +1134,7 @@ if ( ! class_exists( 'zLikeButton' ) ) :
         }
 
 
+        // Create an instance of the like button
         public static function get_instance() {
 
             if ( null == self::$instance ) {

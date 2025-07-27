@@ -3,7 +3,8 @@ Contributors: zodannl, martenmoolenaar
 Tags: like, button, like, like button, custom like
 Requires at least: 5.5
 Tested up to: 6.8
-Stable tag: 0.0.5
+Version: 0.0.6
+Stable tag: 0.0.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -63,6 +64,11 @@ Yes. We currently have on our roadmap:
 
 
 == Changelog ==
+
+= 0.0.6 =
+* Refactoring 
+* Added option to include/exclude not-logged-in users
+* Added option to remove likes directly from My Likes List
 
 = 0.0.5 =
 * Added security improvements
