@@ -16,7 +16,7 @@ Display a very simple and customisable like button for your posts or any custom 
 
 == Installation ==
 
-= Install the Mini Menu from within WordPress =
+= Install the plugin from within WordPress =
 
 1. Visit the plugins page within your dashboard and select ‘Add New’;
 1. Search for ‘Z Like Button’;
@@ -34,7 +34,7 @@ Display a very simple and customisable like button for your posts or any custom 
 
 1. On the Plugins page in WordPress you will see a 'settings' link below the plugin name;
 2. On the settings page, tick the boxes for location (**where** on the page you want the button to appear) and post types (on **what type** of posts/pages);
-3. I you want you can
+3. If you want you can
     - hide the counter box
     - change the icon
     - change the color of the icon
@@ -66,9 +66,9 @@ Yes. We currently have on our roadmap:
 == Changelog ==
 
 = 0.0.6 =
-* Refactoring 
 * Added option to include/exclude not-logged-in users
 * Added option to remove likes directly from My Likes List
+* Refactoring
 
 = 0.0.5 =
 * Added security improvements
