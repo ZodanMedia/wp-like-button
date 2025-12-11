@@ -2,7 +2,7 @@
 Contributors: zodannl, martenmoolenaar
 Tags: like, button, like, like button, custom like
 Requires at least: 5.5
-Tested up to: 6.8
+Tested up to: 6.9
 Version: 0.0.6
 Stable tag: 0.0.6
 License: GPLv2 or later

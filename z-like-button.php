@@ -5,7 +5,7 @@
  * Plugin URI: https://plugins.zodan.nl/wordpress-like-button/
  * Tags: like, button, like, like button, custom like
  * Requires at least: 5.5
- * Tested up to: 6.8
+ * Tested up to: 6.9
  * Description: Displays a simple and customisable like-button for all types of posts.
  * Version: 0.0.6
  * Stable Tag: 0.0.6
