@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: Z Like Button
+ * Plugin Name: Zodan Like Button
  * Contributors: zodannl, martenmoolenaar
  * Plugin URI: https://plugins.zodan.nl/wordpress-like-button/
  * Tags: like, button, like, like button, custom like

@@ -1,4 +1,4 @@
-=== Z Like Button ===
+=== Zodan Like Button ===
 Contributors: zodannl, martenmoolenaar
 Tags: like, button, like, like button, custom like
 Requires at least: 5.5
@@ -19,7 +19,7 @@ Display a very simple and customisable like button for your posts or any custom 
 = Install the plugin from within WordPress =
 
 1. Visit the plugins page within your dashboard and select ‘Add New’;
-1. Search for ‘Z Like Button’;
+1. Search for ‘Zodan Like Button’;
 1. Activate the plugin from your Plugins page;
 1. Go to ‘after activation’ below.
 
