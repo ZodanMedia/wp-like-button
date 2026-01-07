@@ -1,10 +1,10 @@
 (function ($) {
 
     $(function() {
-        if ($('.zLikeButton').length > 0) {
-            $('.likeCheck').click(function () {
+        if ($('.zodanLikeButton').length > 0) {
+            $('.zodanLikeCheck').click(function () {
                 const $this = $(this);
-                const $these = $('.likeCheck');
+                const $these = $('.zodanLikeCheck');
                 // in case there are more instances active, get them all
                 $these.each(function() {
                     console.log($(this));
@@ -12,15 +12,15 @@
                 })
                 
                 data = {
-                    'action': 'like_button',
-                    'nonce': z_like_button.nonce,
+                    'action': 'zodan_like_button',
+                    'nonce': zodan_like_button.nonce,
                     'post': $this.attr('id')
                 };
 
                 $.ajax({
                     type: "post",
                     data: data,
-                    url: z_like_button.url,
+                    url: zodan_like_button.url,
                     dataType: "json",
                     success: function (results) {
                         $these.each(function() {
@@ -29,7 +29,7 @@
                             let checked = $this.prop("checked");
                             console.log(checked);
                             $(this).prop("checked", checked);
-                            $(this).parent().find('.likeCount').text(results.likes);
+                            $(this).parent().find('.zodanLikeCount').text(results.likes);
                             $(this).parent().find('.intitule').text(results.text);
                             $(this).removeAttr("disabled");
                         })
@@ -46,7 +46,7 @@
                 $(this).attr("disabled", "disabled");
                 
                 data = {
-                    'action': 'like_button_remove',
+                    'action': 'zodan_like_button_remove',
                     'nonce': $this.attr('data-post-nonce'),
                     'post': $this.attr('data-post-id')
                 };
@@ -54,7 +54,7 @@
                 $.ajax({
                     type: "post",
                     data: data,
-                    url: z_like_button.url,
+                    url: zodan_like_button.url,
                     dataType: "json",
                     success: function (results) {
                         if(results.removed == $this.attr('data-post-id')) {

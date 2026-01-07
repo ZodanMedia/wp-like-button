@@ -1,4 +1,4 @@
-.zLikeButton {
+.zodanLikeButton {
 	position: relative;
 	font-size: 1em;
 	margin: 1em 0;
@@ -6,13 +6,13 @@
 	justify-content: start;
 	align-items: center;
 }
-.likeCheck {
+.zodanLikeCheck {
 	visibility: hidden;
 	top: 0;
 	left: 0;
 	position: absolute;
 }
-.zLikeLabel {
+.zodanLikeLabel {
 	font-size: 1.2em;
 	width: 1em;
 	height: 1em;
@@ -31,7 +31,7 @@
 	left: 50%;
 	top: 50%;
 } */
-.likeCount {
+.zodanLikeCount {
 	margin: 0;
 	display: inline-block;
 	font-size: 0.8em;
@@ -40,21 +40,21 @@
 	margin-left: 0.3em;
 	color: #7F7F7F;
 }
-.hide-counter .likeCount {
+.zlb-hide-counter .zodanLikeCount {
 	display: none;
 }
-.zLikeLabel:hover {
+.zodanLikeLabel:hover {
 	animation: zlb-beat .25s infinite alternate;
 }
-.likeCheck:not(:checked) + .zLikeLabel {
+.zodanLikeCheck:not(:checked) + .zodanLikeLabel {
 	color: var(--z-color-inactive);	
 }
-.likeCheck:checked + .zLikeLabel {
+.zodanLikeCheck:checked + .zodanLikeLabel {
 	color: var(--z-color-active);
 	will-change: font-size;
 	animation: zlb-grow 1s cubic-bezier(.17, .89, .32, 1.49);
 }
-.likeCheck:checked + .zLikeLabel:hover {
+.zodanLikeCheck:checked + .zodanLikeLabel:hover {
 	will-change: font-size;
 	animation: zlb-grow 1s cubic-bezier(.17, .89, .32, 1.49), zlb-beat .25s infinite alternate;
 }

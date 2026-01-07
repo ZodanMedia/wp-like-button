@@ -7,8 +7,8 @@
  * Requires at least: 5.5
  * Tested up to: 6.9
  * Description: Displays a simple and customisable like-button for all types of posts.
- * Version: 0.0.6
- * Stable Tag: 0.0.6
+ * Version: 0.0.7
+ * Stable Tag: 0.0.7
  * Author: Zodan
  * Author URI: https://zodan.nl
  * Text Domain: z-like-button
@@ -17,12 +17,11 @@
  *
  */
 
-if ( ! class_exists( 'zLikeButton' ) ) :
+if ( ! class_exists( 'zodanLikeButton' ) ) :
 
-    class zLikeButton {
+    class zodanLikeButton {
         private $options;
-        private $version_number = '0.0.6';
-
+        private $version_number = '0.0.7';
         protected static $instance = null;
 
         public function __construct(){
@@ -34,18 +33,17 @@ if ( ! class_exists( 'zLikeButton' ) ) :
             /**
              * Ajax functions for front-end
              */
-            add_action('wp_ajax_like_button', array($this, 'handle_ajax'));
-            add_action('wp_ajax_nopriv_like_button', array($this, 'handle_ajax'));
+            add_action('wp_ajax_zodan_like_button', array($this, 'handle_ajax'));
+            add_action('wp_ajax_nopriv_zodan_like_button', array($this, 'handle_ajax'));
 
-            add_action('wp_ajax_like_button_remove', array($this, 'handle_ajax_removal'));
-            add_action('wp_ajax_nopriv_like_button_remove', array($this, 'handle_ajax_removal'));
-
+            add_action('wp_ajax_zodan_like_button_remove', array($this, 'handle_ajax_removal'));
+            add_action('wp_ajax_nopriv_zodan_like_button_remove', array($this, 'handle_ajax_removal'));
 
             /**
              * Shortcode for inserting the button
              */
-            add_shortcode('z_like_button',array($this, 'shortcode_like_button'));
-            add_shortcode('zlikebutton_likes_list',array($this, 'shortcode_my_likes_list'));
+            add_shortcode('zodan_like_button',array($this, 'shortcode_like_button'));
+            add_shortcode('zodan_like_button_likes_list',array($this, 'shortcode_my_likes_list'));
 
             /**
              * Save post preferences on save
@@ -120,10 +118,6 @@ if ( ! class_exists( 'zLikeButton' ) ) :
                 'zlikebutton_options_page_section'
             );
 
-
-
-            
-
             add_settings_field(
                 'zlikebutton_options_icon',
                 esc_html__('Icon to display', 'z-like-button'),
@@ -162,7 +156,7 @@ if ( ! class_exists( 'zLikeButton' ) ) :
             printf(
                 /* translators: %s is a shortcode used by the plugin */
                 esc_html__( 'The Like Button can be added anywhere using the shortcode %s', 'z-like-button' ),
-                '<code>[z_like_button]</code>'
+                '<code>[zodan_like_button]</code>'
             );  
             echo '.</p><p>';
             esc_html_e( 'Or automatically before and/or after the content using the "button location" settings', 'z-like-button' );
@@ -190,7 +184,7 @@ if ( ! class_exists( 'zLikeButton' ) ) :
                 printf(
                     /* translators: %s is a shortcode used by the plugin */
                     esc_html__( 'If nothing is checked, the button will not show unless you manually add the %s shortcode somewhere in your content.', 'z-like-button' ),
-                    '<code>[z_like_button]</code>'
+                    '<code>[zodan_like_button]</code>'
                 );
                 echo '</p>';
             }
@@ -247,7 +241,6 @@ if ( ! class_exists( 'zLikeButton' ) ) :
                     $checked = ' checked="checked"';
                 }
                 echo '<label><input type="radio" name="zlikebutton_options[icon]" value="'. esc_attr( $value ) .'"'.esc_attr( $checked ).'><i class="zlb-icon '. esc_attr( $value ) .'"></i></label>';
-
            }
         }
 
@@ -268,7 +261,6 @@ if ( ! class_exists( 'zLikeButton' ) ) :
             $options = get_option( 'zlikebutton_options' );
 
             $current_page = (isset($options['my_likes_page'])) ? $options['my_likes_page'] : 0;
-
 
             // 1. Create select with existing page options
 			$args = array(
@@ -299,12 +291,11 @@ if ( ! class_exists( 'zLikeButton' ) ) :
             printf(
                 /* translators: %s is a shortcode used by the plugin */
                 esc_html__('If "No page" is selected, you can add this list yourself anywhere using the %s shortcode.', 'z-like-button' ),
-                '<code>[zlikebutton_likes_list]</code>'
+                '<code>[zodan_like_button_likes_list]</code>'
             );
             echo '</p>';
 
         }
-
 
         // Validate settings on save
         public function zlikebutton_plugin_options_validate( $input ) {
@@ -348,6 +339,7 @@ if ( ! class_exists( 'zLikeButton' ) ) :
         public function like_button_add_admin_menu() {
             add_options_page(esc_html__('Configuration like me', 'z-like-button'), esc_html__('Like Button', 'z-like-button'), 'manage_options', 'zlikebutton_options', array($this, 'zlikebutton_options_page') );
         }
+
         public function zlikebutton_options_page() {
             add_filter('admin_footer_text', array($this, 'z_admin_footer_print_thankyou'), 900);
 
@@ -366,7 +358,6 @@ if ( ! class_exists( 'zLikeButton' ) ) :
             </div><?php
 
         }
-
 
         // Print a thankyou notice
         public function z_admin_footer_print_thankyou( $data ) {
@@ -389,17 +380,18 @@ if ( ! class_exists( 'zLikeButton' ) ) :
 
             if (!isset($options["show_like_active_css"]) || $options["show_like_active_css"] != true) {
                 $plugins_url = plugin_dir_url( __FILE__ );
-                wp_enqueue_style( 'zlikebutton-css', $plugins_url . 'assets/z-like-button.css', null, $this->version_number );
+                wp_enqueue_style( 'zodan-like-button-css', $plugins_url . 'assets/zodan-like-button.css', null, $this->version_number );
             }
         }
+
         // Localize scripts (front-end)
         public function like_button_scripts() {
             $plugins_url = plugin_dir_url( __FILE__ );
 
-            wp_register_script( 'z-like-button', $plugins_url . 'assets/z-like-button.js', array( 'jquery' ), array('jquery'), $this->version_number, array( 'in_footer' => true ) );
-            wp_enqueue_script('z-like-button');
+            wp_register_script( 'zodan-like-button', $plugins_url . 'assets/zodan-like-button.js', array( 'jquery' ), array('jquery'), $this->version_number, array( 'in_footer' => true ) );
+            wp_enqueue_script('zodan-like-button');
 
-            wp_localize_script('z-like-button', 'z_like_button', array(
+            wp_localize_script('zodan-like-button', 'zodan_like_button', array(
                     'url'   => admin_url('admin-ajax.php'),
                     'nonce' => wp_create_nonce('z-like-button'),
                 )
@@ -465,7 +457,8 @@ if ( ! class_exists( 'zLikeButton' ) ) :
 
             echo '<div id="zlikebutton-update-wrapper"><p><label for="zlikebutton-manual-update-likes">' . esc_html__('New total:', 'z-like-button') . '</label> <input class="small-text" id="zlikebutton-manual-update-likes" name="zlikebutton-manual-update-likes" type="number" value="'.esc_attr( $total_likes ).'" /><br /><small>' . esc_html__('You’ll need to update your post to save changes.', 'z-like-button') . '</small></p></div>';
 
-        } 
+        }
+
         public function save_like_button($post_id) {
             // If the use cannot edit posts, bail out
             if ( ! current_user_can( 'edit_post', $post_id ) ) {
@@ -511,7 +504,6 @@ if ( ! class_exists( 'zLikeButton' ) ) :
             update_post_meta($post_id, 'zlikebutton_hide', $zlikebutton_hide);
 
         }
-    
 
         // Use a shortcode to display an overview of liked posts
         public function shortcode_my_likes_list($atts, $content = null) {
@@ -551,14 +543,15 @@ if ( ! class_exists( 'zLikeButton' ) ) :
 
             $options = get_option( 'zlikebutton_options' );
             if (isset($options["show_like_button_before"]) && $options["show_like_button_before"] == 1) {
-                $content = do_shortcode('[z_like_button]') . $content;
+                $content = do_shortcode('[zodan_like_button]') . $content;
             }
             if (isset($options["show_like_button_after"]) && $options["show_like_button_after"] == 1) {
-                $content = $content . do_shortcode('[z_like_button]');
+                $content = $content . do_shortcode('[zodan_like_button]');
             }
             return $content;
 
         }
+
         public function like_button_filter_the_content_for_my_list($content) {
 
             $options = get_option( 'zlikebutton_options' );
@@ -566,24 +559,13 @@ if ( ! class_exists( 'zLikeButton' ) ) :
             if ( ! empty( $options["my_likes_page"] ) ) {
                 if ( is_singular() && in_the_loop() && is_main_query() ) {
                     if( get_the_ID() === intval( $options["my_likes_page"] ) ) {
-                        $content = $content . do_shortcode('[zlikebutton_likes_list]');
+                        $content = $content . do_shortcode('[zodan_like_button_likes_list]');
                     }
                 }
             }
             return $content;
 
         }
-
-
-
-
-
-
-
-
-
-
-
 
         private function ip_is_in_postmeta( $ip = 0, $post_id = 0) {
             $liked = false;
@@ -609,6 +591,7 @@ if ( ! class_exists( 'zLikeButton' ) ) :
             return $liked;
             
         }
+
         private function user_is_in_postmeta( $post_id = 0 ) {
             $liked = false;
             if ( !in_array(get_post_type(intval($post_id)), $this->get_all_cpt() ) ) {
@@ -626,6 +609,7 @@ if ( ! class_exists( 'zLikeButton' ) ) :
             return $liked;
 
         }
+
         private function post_is_in_usermeta( $post_id = 0 ) {
             $liked = false;
             $user_id = 0;
@@ -681,6 +665,7 @@ if ( ! class_exists( 'zLikeButton' ) ) :
                 return false;
             }
         }
+
         private function add_post_to_usermeta( $post_id = 0 ) {
             if ( !in_array(get_post_type(intval($post_id)), $this->get_all_cpt() ) ) {
                 return false;
@@ -774,10 +759,7 @@ if ( ! class_exists( 'zLikeButton' ) ) :
             } else {
                 return false;
             }
-
         }
-
-        
 
         public function get_total_likes( $post_id = 0) {
            if ( !in_array(get_post_type(intval($post_id)), $this->get_all_cpt() ) ) {
@@ -789,6 +771,7 @@ if ( ! class_exists( 'zLikeButton' ) ) :
             }
             return intval($totals);
         }
+
         private function update_total_likes( $post_id = 0, $amount = 0 ) {
            if ( !in_array(get_post_type(intval($post_id)), $this->get_all_cpt() ) ) {
                 return false;
@@ -802,36 +785,6 @@ if ( ! class_exists( 'zLikeButton' ) ) :
 
             update_post_meta( intval($post_id), 'zlikebutton_totals', intval($totals) );
         } 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- 
-
 
         public function shortcode_like_button($atts, $content = null) {
 
@@ -884,17 +837,15 @@ if ( ! class_exists( 'zLikeButton' ) ) :
             }
 
 
-
             // 3. Output
             $current_icon = (isset($options['icon'])) ? $options['icon'] : 'icon-heart';
             $color_inactive =  (isset($options['color_inactive'])) ? $options['color_inactive'] : '#989898';
-            $color_active = (isset($options['color_active'])) ? $options['color_active'] : '#ef1d5f';    
-            
+            $color_active = (isset($options['color_active'])) ? $options['color_active'] : '#ef1d5f';           
 
             $class = '';
             $checked = '';
             if (isset($options['hide_counter_box']) && $options['hide_counter_box'] == true) {
-                $class .= ' hide-counter';
+                $class .= ' zlb-hide-counter';
             }
 
             if ($is_liked !== false) {
@@ -903,20 +854,9 @@ if ( ! class_exists( 'zLikeButton' ) ) :
             }
             $random_id = wp_rand(50000000,500000000);
 
-            return '<div class="zLikeButton'. esc_html( $class ).'" style="--z-color-inactive: '. esc_attr( $color_inactive ).';--z-color-active: '. esc_attr( $color_active ).'"><input '.esc_html( $checked ).' id="post_'.esc_html( $id_post ).'_'.$random_id.'" type="checkbox" class="likeCheck"/>
-                <label for="post_'.esc_html( $id_post ).'_'.$random_id.'" class="zlb-icon '. esc_attr($current_icon) .' zLikeLabel" aria-label="like this"></label><span class="likeCount">'. esc_html( $likes_counted) .'</span></div>';
+            return '<div class="zLikeButton'. esc_html( $class ).'" style="--z-color-inactive: '. esc_attr( $color_inactive ).';--z-color-active: '. esc_attr( $color_active ).'"><input '.esc_html( $checked ).' id="post_'.esc_html( $id_post ).'_'.$random_id.'" type="checkbox" class="zodanLikeCheck"/>
+                <label for="post_'.esc_html( $id_post ).'_'.$random_id.'" class="zlb-icon '. esc_attr($current_icon) .' zodanLikeLabel" aria-label="like this"></label><span class="zodanLikeCount">'. esc_html( $likes_counted) .'</span></div>';
         }
-
-
-
-
-
-
-
-
-
-
-
 
         public function handle_ajax() {
             if( empty( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'])), 'z-like-button' ) ) {
@@ -990,9 +930,6 @@ if ( ! class_exists( 'zLikeButton' ) ) :
             die();
         }
 
-
-
-
         public function handle_ajax_removal() {
             if( empty( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'])), 'z-like-button-remove' ) ) {
                 die( 'Forbidden !');
@@ -1051,7 +988,6 @@ if ( ! class_exists( 'zLikeButton' ) ) :
             return array_search($needle, $column, true);
             // return $index !== false ? $index : false;
         }
-
 
         // Get all available icons
         public function getAllIcons() {
@@ -1133,7 +1069,6 @@ if ( ! class_exists( 'zLikeButton' ) ) :
             return apply_filters( 'zlikebutton_add_cpt', $cpts );
         }
 
-
         // Create an instance of the like button
         public static function get_instance() {
 
@@ -1144,9 +1079,6 @@ if ( ! class_exists( 'zLikeButton' ) ) :
         }
     }
 
-
-
-    zLikeButton::get_instance();
-
+    zodanLikeButton::get_instance();
 
 endif;

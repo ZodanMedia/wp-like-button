@@ -3,8 +3,8 @@ Contributors: zodannl, martenmoolenaar
 Tags: like, button, like, like button, custom like
 Requires at least: 5.5
 Tested up to: 6.9
-Version: 0.0.6
-Stable tag: 0.0.6
+Version: 0.0.7
+Stable tag: 0.0.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -64,6 +64,9 @@ Yes. We currently have on our roadmap:
 
 
 == Changelog ==
+
+= 0.0.7 =
+* Name changes
 
 = 0.0.6 =
 * Added option to include/exclude not-logged-in users
